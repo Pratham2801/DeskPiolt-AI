@@ -99,6 +99,92 @@ DeskPilot AI uses three services, so production deployment should host each part
 | n8n | n8n Cloud, Railway, Render, Docker VPS, or local server |
 | Email | Gmail SMTP App Password or production SMTP provider |
 
+## Recommended Free Deployment Path
+
+For the easiest live demo, use:
+
+1. Render for the Flask web app
+2. Railway or another hosted MySQL provider for the MySQL database
+3. n8n Cloud trial, Railway, or a VPS-hosted n8n instance for the workflow
+4. Gmail App Password for SMTP email sending
+
+Vercel is excellent for static and serverless frontend projects, but this project is a Flask backend connected to MySQL and n8n. Render is a better fit because it can run the Flask app using Gunicorn as a web service.
+
+## Deploy Flask App on Render
+
+Render can deploy directly from your GitHub repository.
+
+1. Go to:
+
+```text
+https://render.com
+```
+
+2. Sign in with GitHub.
+
+3. Click:
+
+```text
+New > Web Service
+```
+
+4. Select your repository:
+
+```text
+Pratham2801/DeskPiolt-AI
+```
+
+5. Use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Runtime | Python 3 |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `gunicorn app:app` |
+| Plan | Free |
+
+This repository also includes `render.yaml`, so Render can detect most deployment settings automatically.
+
+## Deploy MySQL
+
+Use a hosted MySQL provider such as Railway.
+
+1. Create a new MySQL database.
+2. Copy the database host, port, user, password, and database name.
+3. Run the SQL from `database.sql` inside the hosted MySQL console.
+4. Add the same database values in Render environment variables.
+
+Required Render environment variables:
+
+```text
+MYSQL_HOST=your_mysql_host
+MYSQL_PORT=3306
+MYSQL_USER=your_mysql_user
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_DATABASE=deskpilot_ai
+N8N_WEBHOOK_URL=https://your-n8n-domain/webhook/deskpilot
+```
+
+## Deploy n8n
+
+You need a public n8n URL because the live Flask app cannot call `localhost`.
+
+Options:
+
+1. n8n Cloud trial
+2. Railway deployment
+3. Render Docker deployment
+4. VPS deployment using Docker
+
+After deployment:
+
+1. Import `n8n_workflow.json`.
+2. Configure MySQL credentials.
+3. Configure Gmail SMTP credentials.
+4. Activate the workflow.
+5. Copy the production webhook URL.
+6. Add that URL as `N8N_WEBHOOK_URL` in Render.
+
 ## Production Environment Variables
 
 Set these variables in your hosting platform:
