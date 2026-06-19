@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 700 34px Arial, Helvetica, sans-serif; fill: #111827; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #4b5563; }
+      .section-title { font: 700 18px Arial, Helvetica, sans-serif; fill: #111827; }
+      .box-title { font: 700 17px Arial, Helvetica, sans-serif; fill: #111827; }
+      .box-text { font: 400 14px Arial, Helvetica, sans-serif; fill: #374151; }
+      .small { font: 400 12px Arial, Helvetica, sans-serif; fill: #4b5563; }
+      .label { font: 700 12px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .panel { fill: #f9fafb; stroke: #d1d5db; stroke-width: 2; rx: 14; }
+      .user { fill: #ecfeff; stroke: #0891b2; stroke-width: 2; rx: 12; }
+      .flask { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 12; }
+      .n8n { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; rx: 12; }
+      .db { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 12; }
+      .email { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; rx: 12; }
+      .response { fill: #fdf2f8; stroke: #db2777; stroke-width: 2; rx: 12; }
+      .arrow { stroke: #374151; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-soft { stroke: #6b7280; stroke-width: 2; fill: none; marker-end: url(#arrowhead-soft); stroke-dasharray: 7 5; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#374151"/>
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1050"/>
+
+  <text class="title" x="60" y="62">DeskPilot AI - Automated Support Ticket Routing System</text>
+  <text class="subtitle" x="60" y="94">Multi-company support portal with Flask, n8n automation, MySQL isolation, Gmail SMTP, and detailed user confirmation emails</text>
+
+  <rect class="panel" x="45" y="130" width="305" height="780"/>
+  <text class="section-title" x="70" y="165">Users and Companies</text>
+
+  <rect class="panel" x="390" y="130" width="325" height="780"/>
+  <text class="section-title" x="415" y="165">Flask Web Application</text>
+
+  <rect class="panel" x="760" y="130" width="365" height="780"/>
+  <text class="section-title" x="785" y="165">n8n Workflow Automation</text>
+
+  <rect class="panel" x="1165" y="130" width="390" height="780"/>
+  <text class="section-title" x="1190" y="165">Storage and Notification</text>
+
+  <!-- Users -->
+  <rect class="user" x="80" y="210" width="230" height="95"/>
+  <text class="box-title" x="105" y="244">User / Customer</text>
+  <text class="box-text" x="105" y="270">Chooses company, category,</text>
+  <text class="box-text" x="105" y="291">priority, email, and issue</text>
+
+  <rect class="user" x="80" y="405" width="230" height="95"/>
+  <text class="box-title" x="105" y="439">Company Admin</text>
+  <text class="box-text" x="105" y="465">Registers company such as</text>
+  <text class="box-text" x="105" y="486">Amazon, Flipkart, Jio</text>
+
+  <!-- Flask -->
+  <rect class="flask" x="430" y="200" width="245" height="105"/>
+  <text class="box-title" x="455" y="234">Flask Web Portal</text>
+  <text class="box-text" x="455" y="260">http://127.0.0.1:5000</text>
+  <text class="box-text" x="455" y="282">Ticket form and company UI</text>
+
+  <rect class="flask" x="430" y="350" width="245" height="115"/>
+  <text class="box-title" x="455" y="384">Flask Backend API</text>
+  <text class="box-text" x="455" y="410">/api/companies</text>
+  <text class="box-text" x="455" y="432">/submit-ticket</text>
+  <text class="box-text" x="455" y="454">Validates selected company</text>
+
+  <rect class="flask" x="430" y="535" width="245" height="115"/>
+  <text class="box-title" x="455" y="569">Company Registration</text>
+  <text class="box-text" x="455" y="595">Creates company slug</text>
+  <text class="box-text" x="455" y="617">Creates ticket table</text>
+  <text class="box-text" x="455" y="639">Example: tickets_jio</text>
+
+  <rect class="response" x="430" y="730" width="245" height="95"/>
+  <text class="box-title" x="455" y="764">Frontend Response</text>
+  <text class="box-text" x="455" y="790">Shows ticket ID, company,</text>
+  <text class="box-text" x="455" y="811">table, team, priority, SLA</text>
+
+  <!-- n8n -->
+  <rect class="n8n" x="805" y="185" width="275" height="92"/>
+  <text class="box-title" x="830" y="219">Webhook Node</text>
+  <text class="box-text" x="830" y="245">POST /webhook/deskpilot</text>
+  <text class="box-text" x="830" y="266">Receives Flask ticket JSON</text>
+
+  <rect class="n8n" x="805" y="320" width="275" height="100"/>
+  <text class="box-title" x="830" y="354">AI - Intent Classifier</text>
+  <text class="box-text" x="830" y="380">Uses $json and issue category</text>
+  <text class="box-text" x="830" y="402">Detects login, payment, bug</text>
+
+  <rect class="n8n" x="805" y="465" width="275" height="110"/>
+  <text class="box-title" x="830" y="499">Routing and SLA Engine</text>
+  <text class="box-text" x="830" y="525">Assigns Auth, Billing, Tech,</text>
+  <text class="box-text" x="830" y="547">or General Support team</text>
+  <text class="box-text" x="830" y="569">Calculates SLA deadline</text>
+
+  <rect class="n8n" x="805" y="625" width="275" height="105"/>
+  <text class="box-title" x="830" y="659">Execute a SQL query</text>
+  <text class="box-text" x="830" y="685">Writes to selected table</text>
+  <text class="box-text" x="830" y="707">Example: tickets_amazon</text>
+
+  <rect class="n8n" x="805" y="775" width="275" height="90"/>
+  <text class="box-title" x="830" y="809">Respond to Webhook</text>
+  <text class="box-text" x="830" y="835">Returns success JSON</text>
+  <text class="box-text" x="830" y="856">to Flask frontend</text>
+
+  <!-- Storage -->
+  <rect class="db" x="1210" y="190" width="300" height="95"/>
+  <text class="box-title" x="1235" y="224">MySQL: companies</text>
+  <text class="box-text" x="1235" y="250">Stores registered companies</text>
+  <text class="box-text" x="1235" y="271">name, slug, ticket_table</text>
+
+  <rect class="db" x="1210" y="330" width="300" height="145"/>
+  <text class="box-title" x="1235" y="364">Company Ticket Tables</text>
+  <text class="box-text" x="1235" y="390">tickets_amazon</text>
+  <text class="box-text" x="1235" y="412">tickets_flipkart</text>
+  <text class="box-text" x="1235" y="434">tickets_myntra</text>
+  <text class="box-text" x="1235" y="456">tickets_jio / new company tables</text>
+
+  <rect class="email" x="1210" y="545" width="300" height="115"/>
+  <text class="box-title" x="1235" y="579">Gmail SMTP</text>
+  <text class="box-text" x="1235" y="605">Sends detailed designer email</text>
+  <text class="box-text" x="1235" y="627">Ticket ID, team, priority, SLA,</text>
+  <text class="box-text" x="1235" y="649">company table, routing reason</text>
+
+  <rect class="email" x="1210" y="725" width="300" height="105"/>
+  <text class="box-title" x="1235" y="759">User Email Inbox</text>
+  <text class="box-text" x="1235" y="785">Receives ticket confirmation</text>
+  <text class="box-text" x="1235" y="807">with full ticket details</text>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M310 257 C350 257, 380 252, 430 252"/>
+  <text class="small" x="338" y="242">opens portal</text>
+
+  <path class="arrow" d="M310 452 C360 452, 380 405, 430 405"/>
+  <text class="small" x="330" y="420">registers company</text>
+
+  <path class="arrow" d="M552 305 L552 350"/>
+  <text class="small" x="566" y="333">submit</text>
+
+  <path class="arrow" d="M552 465 L552 535"/>
+  <text class="small" x="566" y="505">new company</text>
+
+  <path class="arrow" d="M675 407 C720 407, 755 230, 805 230"/>
+  <text class="small" x="690" y="280">valid ticket JSON</text>
+
+  <path class="arrow" d="M1080 230 C1125 230, 1165 238, 1210 238"/>
+  <text class="small" x="1120" y="220">verify company</text>
+
+  <path class="arrow" d="M675 592 C865 592, 1020 238, 1210 238"/>
+  <text class="small" x="765" y="615">save company metadata</text>
+
+  <path class="arrow" d="M675 592 C870 655, 1025 402, 1210 402"/>
+  <text class="small" x="785" y="675">create company table</text>
+
+  <path class="arrow" d="M942 277 L942 320"/>
+  <path class="arrow" d="M942 420 L942 465"/>
+  <path class="arrow" d="M942 575 L942 625"/>
+
+  <path class="arrow" d="M1080 678 C1130 678, 1155 402, 1210 402"/>
+  <text class="small" x="1102" y="590">insert routed ticket</text>
+
+  <path class="arrow" d="M1080 678 C1140 678, 1150 602, 1210 602"/>
+  <text class="small" x="1105" y="652">send email step</text>
+
+  <path class="arrow" d="M1360 660 L1360 725"/>
+
+  <path class="arrow" d="M942 730 L942 775"/>
+  <path class="arrow" d="M805 820 C730 820, 710 778, 675 778"/>
+  <text class="small" x="690" y="808">success JSON</text>
+
+  <path class="arrow" d="M430 778 C375 778, 345 278, 310 278"/>
+  <text class="small" x="315" y="760">confirmation on page</text>
+
+  <!-- Legend -->
+  <rect class="panel" x="60" y="940" width="1480" height="70"/>
+  <text class="section-title" x="85" y="972">Key Idea</text>
+  <text class="box-text" x="185" y="972">Each registered company gets a separate MySQL ticket table. Users select the company before submitting a ticket, and n8n stores the ticket only in that company-specific table.</text>
+  <text class="box-text" x="185" y="995">Examples: Amazon tickets go to tickets_amazon, Flipkart tickets go to tickets_flipkart, and a newly registered Jio company gets tickets_jio.</text>
+</svg>

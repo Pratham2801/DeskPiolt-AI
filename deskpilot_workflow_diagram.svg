@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 800 38px Arial, Helvetica, sans-serif; fill: #172033; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #64748b; }
+      .stage-label { font: 800 13px Arial, Helvetica, sans-serif; fill: #ffffff; letter-spacing: .08em; }
+      .node-title { font: 800 18px Arial, Helvetica, sans-serif; fill: #172033; }
+      .node-text { font: 400 14px Arial, Helvetica, sans-serif; fill: #475569; }
+      .small { font: 700 12px Arial, Helvetica, sans-serif; fill: #64748b; }
+      .tiny-white { font: 800 13px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .flowline { stroke: #1e293b; stroke-width: 4; fill: none; marker-end: url(#arrow-dark); }
+      .sideflow { stroke: #64748b; stroke-width: 2.5; fill: none; marker-end: url(#arrow-soft); stroke-dasharray: 8 7; }
+      .central { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 2; rx: 22; }
+      .entry { fill: #e0f2fe; stroke: #0284c7; stroke-width: 2.5; rx: 18; }
+      .flask { fill: #dcfce7; stroke: #16a34a; stroke-width: 2.5; rx: 18; }
+      .n8n { fill: #ffedd5; stroke: #f97316; stroke-width: 2.5; rx: 18; }
+      .decision { fill: #fef3c7; stroke: #d97706; stroke-width: 2.5; }
+      .mysql { fill: #ede9fe; stroke: #7c3aed; stroke-width: 2.5; rx: 18; }
+      .email { fill: #ffe4e6; stroke: #e11d48; stroke-width: 2.5; rx: 18; }
+      .done { fill: #ccfbf1; stroke: #0f766e; stroke-width: 2.5; rx: 18; }
+      .stage-user { fill: #0284c7; rx: 999; }
+      .stage-flask { fill: #16a34a; rx: 999; }
+      .stage-n8n { fill: #f97316; rx: 999; }
+      .stage-db { fill: #7c3aed; rx: 999; }
+      .stage-email { fill: #e11d48; rx: 999; }
+      .stage-done { fill: #0f766e; rx: 999; }
+      .num { fill: #172033; }
+      .num-text { font: 800 14px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .legend-title { font: 800 16px Arial, Helvetica, sans-serif; fill: #172033; }
+      .legend-text { font: 400 13px Arial, Helvetica, sans-serif; fill: #475569; }
+    </style>
+    <marker id="arrow-dark" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <polygon points="0 0, 14 5, 0 10" fill="#1e293b"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <polygon points="0 0, 14 5, 0 10" fill="#64748b"/>
+    </marker>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" width="1400" height="1800"/>
+
+  <text class="title" x="70" y="70">DeskPilot AI - Workflow Timeline</text>
+  <text class="subtitle" x="70" y="104">A step-by-step ticket journey with the n8n automation expanded as the main processing pipeline</text>
+
+  <!-- Central timeline backbone -->
+  <rect class="central" x="430" y="150" width="540" height="1510" filter="url(#shadow)"/>
+  <line x1="700" y1="235" x2="700" y2="1560" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Side column titles -->
+  <text class="legend-title" x="80" y="170">Company Portal Side</text>
+  <text class="legend-text" x="80" y="194">User and Flask actions before automation</text>
+  <text class="legend-title" x="1055" y="170">External Outputs</text>
+  <text class="legend-text" x="1055" y="194">Database storage and email delivery</text>
+
+  <!-- Step 1 -->
+  <rect class="stage-user" x="520" y="185" width="155" height="28"/>
+  <text class="stage-label" x="542" y="204">USER INPUT</text>
+  <rect class="entry" x="480" y="225" width="440" height="110" filter="url(#shadow)"/>
+  <circle class="num" cx="520" cy="258" r="20"/>
+  <text class="num-text" x="515" y="264">1</text>
+  <text class="node-title" x="555" y="258">User Submits Ticket</text>
+  <text class="node-text" x="555" y="286">Selects company, issue category, priority, email,</text>
+  <text class="node-text" x="555" y="308">and issue description in the Flask portal.</text>
+
+  <!-- Side: company registration -->
+  <rect class="flask" x="70" y="245" width="290" height="120" filter="url(#shadow)"/>
+  <text class="node-title" x="100" y="280">Optional Company Setup</text>
+  <text class="node-text" x="100" y="308">Company admin registers Jio,</text>
+  <text class="node-text" x="100" y="330">Amazon, Flipkart, Myntra, etc.</text>
+  <text class="node-text" x="100" y="352">Flask creates company slug.</text>
+  <path class="sideflow" d="M360 305 C395 305, 420 280, 480 280"/>
+
+  <!-- Step 2 -->
+  <path class="flowline" d="M700 335 L700 390"/>
+  <rect class="stage-flask" x="520" y="385" width="170" height="28"/>
+  <text class="stage-label" x="543" y="404">FLASK CHECK</text>
+  <rect class="flask" x="480" y="425" width="440" height="120" filter="url(#shadow)"/>
+  <circle class="num" cx="520" cy="458" r="20"/>
+  <text class="num-text" x="515" y="464">2</text>
+  <text class="node-title" x="555" y="458">Flask Validates Request</text>
+  <text class="node-text" x="555" y="486">Checks company exists in MySQL companies table.</text>
+  <text class="node-text" x="555" y="508">Validates issue type and priority before webhook.</text>
+
+  <!-- Decision: valid company -->
+  <path class="flowline" d="M700 545 L700 600"/>
+  <polygon class="decision" points="700,610 835,690 700,770 565,690" filter="url(#shadow)"/>
+  <text class="node-title" x="640" y="683">Company</text>
+  <text class="node-title" x="644" y="706">Found?</text>
+  <text class="small" x="842" y="677">No</text>
+  <path class="sideflow" d="M835 690 C925 690, 955 625, 1045 625"/>
+  <rect class="entry" x="1045" y="570" width="280" height="105" filter="url(#shadow)"/>
+  <text class="node-title" x="1075" y="605">Stop with Error</text>
+  <text class="node-text" x="1075" y="633">Frontend asks user to select</text>
+  <text class="node-text" x="1075" y="655">a registered company.</text>
+  <text class="small" x="710" y="790">Yes</text>
+
+  <!-- Step 3 webhook -->
+  <path class="flowline" d="M700 770 L700 840"/>
+  <rect class="stage-n8n" x="510" y="835" width="220" height="28"/>
+  <text class="stage-label" x="535" y="854">N8N AUTOMATION</text>
+  <rect class="n8n" x="480" y="875" width="440" height="105" filter="url(#shadow)"/>
+  <circle class="num" cx="520" cy="908" r="20"/>
+  <text class="num-text" x="515" y="914">3</text>
+  <text class="node-title" x="555" y="908">Webhook Node</text>
+  <text class="node-text" x="555" y="936">Receives POST /webhook/deskpilot from Flask.</text>
+  <text class="node-text" x="555" y="958">Payload includes company_id and ticket_table.</text>
+
+  <!-- n8n mini pipeline -->
+  <path class="flowline" d="M700 980 L700 1030"/>
+  <rect class="n8n" x="480" y="1040" width="440" height="125" filter="url(#shadow)"/>
+  <circle class="num" cx="520" cy="1073" r="20"/>
+  <text class="num-text" x="515" y="1079">4</text>
+  <text class="node-title" x="555" y="1073">AI - Intent Classifier Code Node</text>
+  <text class="node-text" x="555" y="1101">Reads $json, issue category, and issue text.</text>
+  <text class="node-text" x="555" y="1123">Classifies Login, Payment, Bug, or General.</text>
+  <text class="node-text" x="555" y="1145">Adds confidence, matched signal, and AI priority.</text>
+
+  <!-- Intent decision side list -->
+  <rect class="n8n" x="1000" y="1010" width="315" height="175" filter="url(#shadow)"/>
+  <text class="node-title" x="1030" y="1045">Intent Rules</text>
+  <text class="node-text" x="1030" y="1075">login -> Login Issue, high</text>
+  <text class="node-text" x="1030" y="1097">payment/refund -> Payment Issue, high</text>
+  <text class="node-text" x="1030" y="1119">bug/crash/error -> Bug Report, medium</text>
+  <text class="node-text" x="1030" y="1141">other -> General Inquiry, low</text>
+  <path class="sideflow" d="M920 1102 C960 1102, 965 1095, 1000 1095"/>
+
+  <!-- Step 5 routing -->
+  <path class="flowline" d="M700 1165 L700 1215"/>
+  <rect class="n8n" x="480" y="1225" width="440" height="145" filter="url(#shadow)"/>
+  <circle class="num" cx="520" cy="1258" r="20"/>
+  <text class="num-text" x="515" y="1264">5</text>
+  <text class="node-title" x="555" y="1258">Routing and SLA Engine Code Node</text>
+  <text class="node-text" x="555" y="1286">Combines user priority with AI priority.</text>
+  <text class="node-text" x="555" y="1308">Assigns Auth, Billing, Tech, or General Support.</text>
+  <text class="node-text" x="555" y="1330">Calculates SLA deadline and escalation status.</text>
+  <text class="node-text" x="555" y="1352">Builds rich email fields and company isolation note.</text>
+
+  <!-- Team SLA side -->
+  <rect class="n8n" x="85" y="1230" width="295" height="155" filter="url(#shadow)"/>
+  <text class="node-title" x="115" y="1265">Team and SLA Policy</text>
+  <text class="node-text" x="115" y="1295">Login -> Auth Support, 24h</text>
+  <text class="node-text" x="115" y="1317">Payment -> Billing Support, 12h</text>
+  <text class="node-text" x="115" y="1339">Bug -> Tech Team, 48h</text>
+  <text class="node-text" x="115" y="1361">General -> General Support, 72h</text>
+  <path class="sideflow" d="M480 1298 C430 1298, 410 1308, 380 1308"/>
+
+  <!-- Step 6 SQL insert -->
+  <path class="flowline" d="M700 1370 L700 1425"/>
+  <rect class="stage-db" x="510" y="1420" width="205" height="28"/>
+  <text class="stage-label" x="535" y="1439">MYSQL WRITE</text>
+  <rect class="mysql" x="480" y="1460" width="440" height="130" filter="url(#shadow)"/>
+  <circle class="num" cx="520" cy="1493" r="20"/>
+  <text class="num-text" x="515" y="1499">6</text>
+  <text class="node-title" x="555" y="1493">Execute a SQL Query Node</text>
+  <text class="node-text" x="555" y="1521">Uses dynamic table name from ticket_table.</text>
+  <text class="node-text" x="555" y="1543">Inserts ticket only into the selected company table.</text>
+  <text class="node-text" x="555" y="1565">Returns ticket_id and routing details.</text>
+
+  <!-- DB output side -->
+  <rect class="mysql" x="1015" y="1440" width="310" height="170" filter="url(#shadow)"/>
+  <text class="node-title" x="1045" y="1475">Company-Specific Tables</text>
+  <text class="node-text" x="1045" y="1505">Amazon -> tickets_amazon</text>
+  <text class="node-text" x="1045" y="1527">Flipkart -> tickets_flipkart</text>
+  <text class="node-text" x="1045" y="1549">Myntra -> tickets_myntra</text>
+  <text class="node-text" x="1045" y="1571">Jio -> tickets_jio</text>
+  <text class="node-text" x="1045" y="1593">New company -> tickets_companyslug</text>
+  <path class="sideflow" d="M920 1525 C960 1525, 975 1525, 1015 1525"/>
+
+  <!-- Email and response bottom split -->
+  <path class="flowline" d="M700 1590 L700 1645"/>
+
+  <rect class="email" x="245" y="1655" width="340" height="105" filter="url(#shadow)"/>
+  <circle class="num" cx="285" cy="1688" r="20"/>
+  <text class="num-text" x="280" y="1694">7</text>
+  <text class="node-title" x="320" y="1688">Send Ticket Confirmation Email</text>
+  <text class="node-text" x="320" y="1716">Gmail SMTP sends designer email with</text>
+  <text class="node-text" x="320" y="1738">company, table, team, priority, and SLA.</text>
+
+  <rect class="done" x="815" y="1655" width="340" height="105" filter="url(#shadow)"/>
+  <circle class="num" cx="855" cy="1688" r="20"/>
+  <text class="num-text" x="850" y="1694">8</text>
+  <text class="node-title" x="890" y="1688">Respond to Webhook</text>
+  <text class="node-text" x="890" y="1716">Returns JSON response to Flask:</text>
+  <text class="node-text" x="890" y="1738">ticket ID, company, table, team, SLA.</text>
+
+  <path class="sideflow" d="M700 1645 C610 1645, 590 1708, 585 1708"/>
+  <path class="sideflow" d="M700 1645 C780 1645, 800 1708, 815 1708"/>
+
+  <!-- Footer legend -->
+  <rect x="70" y="1725" width="1250" height="1" fill="#e2e8f0"/>
+  <text class="small" x="70" y="1780">This workflow diagram is intentionally different from the architecture diagram: it shows time order, decision points, n8n internal automation rules, and the final split into database storage, email delivery, and frontend response.</text>
+</svg>

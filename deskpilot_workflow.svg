@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1200" viewBox="0 0 1500 1200">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 700 34px Arial, Helvetica, sans-serif; fill: #111827; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #4b5563; }
+      .lane-title { font: 700 16px Arial, Helvetica, sans-serif; fill: #111827; }
+      .step-title { font: 700 16px Arial, Helvetica, sans-serif; fill: #111827; }
+      .step-text { font: 400 13px Arial, Helvetica, sans-serif; fill: #374151; }
+      .small { font: 400 12px Arial, Helvetica, sans-serif; fill: #4b5563; }
+      .num { font: 700 14px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .lane { fill: #f9fafb; stroke: #d1d5db; stroke-width: 2; rx: 12; }
+      .customer { fill: #ecfeff; stroke: #0891b2; stroke-width: 2; rx: 10; }
+      .admin { fill: #fefce8; stroke: #ca8a04; stroke-width: 2; rx: 10; }
+      .flask { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 10; }
+      .n8n { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; rx: 10; }
+      .db { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 10; }
+      .email { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; rx: 10; }
+      .decision { fill: #fdf2f8; stroke: #db2777; stroke-width: 2; }
+      .circle { fill: #12313f; }
+      .arrow { stroke: #374151; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-soft { stroke: #6b7280; stroke-width: 2; fill: none; marker-end: url(#arrowhead-soft); stroke-dasharray: 7 5; }
+      .note { fill: #ffffff; stroke: #d1d5db; stroke-width: 1.5; rx: 8; }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#374151"/>
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+      <polygon points="0 0, 12 4, 0 8" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1500" height="1200"/>
+
+  <text class="title" x="60" y="62">DeskPilot AI - Workflow Diagram</text>
+  <text class="subtitle" x="60" y="94">End-to-end ticket journey across user portal, company registration, Flask backend, n8n workflow, MySQL, and Gmail SMTP</text>
+
+  <!-- Lanes -->
+  <rect class="lane" x="55" y="135" width="250" height="940"/>
+  <text class="lane-title" x="78" y="168">User / Company Admin</text>
+
+  <rect class="lane" x="335" y="135" width="260" height="940"/>
+  <text class="lane-title" x="358" y="168">Flask Website and API</text>
+
+  <rect class="lane" x="625" y="135" width="360" height="940"/>
+  <text class="lane-title" x="648" y="168">n8n Automation Workflow</text>
+
+  <rect class="lane" x="1015" y="135" width="220" height="940"/>
+  <text class="lane-title" x="1038" y="168">MySQL Database</text>
+
+  <rect class="lane" x="1265" y="135" width="180" height="940"/>
+  <text class="lane-title" x="1288" y="168">Email / Response</text>
+
+  <!-- Registration branch -->
+  <rect class="admin" x="85" y="215" width="190" height="90"/>
+  <circle class="circle" cx="108" cy="238" r="14"/>
+  <text class="num" x="104" y="243">1</text>
+  <text class="step-title" x="132" y="241">Register Company</text>
+  <text class="step-text" x="108" y="268">Admin enters company</text>
+  <text class="step-text" x="108" y="288">name such as Jio</text>
+
+  <rect class="flask" x="365" y="215" width="200" height="90"/>
+  <circle class="circle" cx="388" cy="238" r="14"/>
+  <text class="num" x="384" y="243">2</text>
+  <text class="step-title" x="412" y="241">Create Slug</text>
+  <text class="step-text" x="388" y="268">Flask validates name</text>
+  <text class="step-text" x="388" y="288">and builds safe table</text>
+
+  <rect class="db" x="1038" y="205" width="174" height="110"/>
+  <circle class="circle" cx="1061" cy="228" r="14"/>
+  <text class="num" x="1057" y="233">3</text>
+  <text class="step-title" x="1085" y="231">Save Company</text>
+  <text class="step-text" x="1061" y="258">Insert into</text>
+  <text class="step-text" x="1061" y="278">companies table</text>
+  <text class="step-text" x="1061" y="298">Create tickets_jio</text>
+
+  <!-- Ticket branch -->
+  <rect class="customer" x="85" y="390" width="190" height="105"/>
+  <circle class="circle" cx="108" cy="413" r="14"/>
+  <text class="num" x="104" y="418">4</text>
+  <text class="step-title" x="132" y="416">Submit Ticket</text>
+  <text class="step-text" x="108" y="443">Select company, issue</text>
+  <text class="step-text" x="108" y="463">category, priority,</text>
+  <text class="step-text" x="108" y="483">email, description</text>
+
+  <rect class="flask" x="365" y="390" width="200" height="105"/>
+  <circle class="circle" cx="388" cy="413" r="14"/>
+  <text class="num" x="384" y="418">5</text>
+  <text class="step-title" x="412" y="416">Validate Ticket</text>
+  <text class="step-text" x="388" y="443">Check required fields</text>
+  <text class="step-text" x="388" y="463">Verify company exists</text>
+  <text class="step-text" x="388" y="483">Attach ticket_table</text>
+
+  <polygon class="decision" points="465,555 555,615 465,675 375,615"/>
+  <text class="step-title" x="415" y="607">Company</text>
+  <text class="step-title" x="424" y="628">Found?</text>
+
+  <rect class="flask" x="365" y="730" width="200" height="88"/>
+  <circle class="circle" cx="388" cy="753" r="14"/>
+  <text class="num" x="384" y="758">6</text>
+  <text class="step-title" x="412" y="756">Send to n8n</text>
+  <text class="step-text" x="388" y="783">POST JSON to</text>
+  <text class="step-text" x="388" y="803">/webhook/deskpilot</text>
+
+  <rect class="n8n" x="675" y="730" width="250" height="88"/>
+  <circle class="circle" cx="698" cy="753" r="14"/>
+  <text class="num" x="694" y="758">7</text>
+  <text class="step-title" x="722" y="756">Webhook Node</text>
+  <text class="step-text" x="698" y="783">Receives company and</text>
+  <text class="step-text" x="698" y="803">ticket payload from Flask</text>
+
+  <rect class="n8n" x="675" y="555" width="250" height="105"/>
+  <circle class="circle" cx="698" cy="578" r="14"/>
+  <text class="num" x="694" y="583">8</text>
+  <text class="step-title" x="722" y="581">AI Intent Classifier</text>
+  <text class="step-text" x="698" y="608">Uses selected issue type</text>
+  <text class="step-text" x="698" y="628">and issue keywords</text>
+  <text class="step-text" x="698" y="648">Detects intent and priority</text>
+
+  <rect class="n8n" x="675" y="390" width="250" height="110"/>
+  <circle class="circle" cx="698" cy="413" r="14"/>
+  <text class="num" x="694" y="418">9</text>
+  <text class="step-title" x="722" y="416">Routing and SLA</text>
+  <text class="step-text" x="698" y="443">Assigns Auth, Billing,</text>
+  <text class="step-text" x="698" y="463">Tech, or General team</text>
+  <text class="step-text" x="698" y="483">Calculates SLA deadline</text>
+
+  <rect class="n8n" x="675" y="225" width="250" height="110"/>
+  <circle class="circle" cx="698" cy="248" r="14"/>
+  <text class="num" x="690" y="253">10</text>
+  <text class="step-title" x="722" y="251">SQL Insert Node</text>
+  <text class="step-text" x="698" y="278">Inserts ticket into</text>
+  <text class="step-text" x="698" y="298">selected company table</text>
+  <text class="step-text" x="698" y="318">using ticket_table</text>
+
+  <rect class="db" x="1038" y="410" width="174" height="118"/>
+  <circle class="circle" cx="1061" cy="433" r="14"/>
+  <text class="num" x="1053" y="438">11</text>
+  <text class="step-title" x="1085" y="436">Ticket Stored</text>
+  <text class="step-text" x="1061" y="463">tickets_amazon</text>
+  <text class="step-text" x="1061" y="483">tickets_flipkart</text>
+  <text class="step-text" x="1061" y="503">tickets_jio etc.</text>
+
+  <rect class="email" x="1285" y="410" width="140" height="118"/>
+  <circle class="circle" cx="1308" cy="433" r="14"/>
+  <text class="num" x="1300" y="438">12</text>
+  <text class="step-title" x="1330" y="436">Email</text>
+  <text class="step-text" x="1308" y="463">Designer email</text>
+  <text class="step-text" x="1308" y="483">with ticket ID,</text>
+  <text class="step-text" x="1308" y="503">SLA, team</text>
+
+  <rect class="email" x="1285" y="615" width="140" height="105"/>
+  <circle class="circle" cx="1308" cy="638" r="14"/>
+  <text class="num" x="1300" y="643">13</text>
+  <text class="step-title" x="1330" y="641">Inbox</text>
+  <text class="step-text" x="1308" y="668">User receives</text>
+  <text class="step-text" x="1308" y="688">confirmation</text>
+
+  <rect class="n8n" x="675" y="895" width="250" height="88"/>
+  <circle class="circle" cx="698" cy="918" r="14"/>
+  <text class="num" x="690" y="923">14</text>
+  <text class="step-title" x="722" y="921">Respond to Webhook</text>
+  <text class="step-text" x="698" y="948">Returns ticket ID, table,</text>
+  <text class="step-text" x="698" y="968">team, priority, SLA</text>
+
+  <rect class="flask" x="365" y="895" width="200" height="88"/>
+  <circle class="circle" cx="388" cy="918" r="14"/>
+  <text class="num" x="380" y="923">15</text>
+  <text class="step-title" x="412" y="921">Show Result</text>
+  <text class="step-text" x="388" y="948">Frontend displays</text>
+  <text class="step-text" x="388" y="968">ticket confirmation</text>
+
+  <rect class="customer" x="85" y="895" width="190" height="88"/>
+  <circle class="circle" cx="108" cy="918" r="14"/>
+  <text class="num" x="100" y="923">16</text>
+  <text class="step-title" x="132" y="921">User Sees Status</text>
+  <text class="step-text" x="108" y="948">Ticket ID, company,</text>
+  <text class="step-text" x="108" y="968">table, team, SLA</text>
+
+  <!-- Error path -->
+  <rect class="note" x="98" y="590" width="170" height="68"/>
+  <text class="step-title" x="118" y="617">Error Path</text>
+  <text class="step-text" x="118" y="640">Ask user to select a</text>
+  <text class="step-text" x="118" y="658">registered company</text>
+
+  <!-- Arrows registration -->
+  <path class="arrow" d="M275 260 L365 260"/>
+  <path class="arrow" d="M565 260 C760 260, 850 260, 1038 260"/>
+
+  <!-- Arrows ticket flow -->
+  <path class="arrow" d="M275 442 L365 442"/>
+  <path class="arrow" d="M465 495 L465 555"/>
+  <path class="arrow" d="M465 675 L465 730"/>
+  <text class="small" x="482" y="705">Yes</text>
+  <path class="arrow-soft" d="M375 615 C315 615, 298 623, 268 623"/>
+  <text class="small" x="320" y="602">No</text>
+
+  <path class="arrow" d="M565 774 L675 774"/>
+  <path class="arrow" d="M800 730 L800 660"/>
+  <path class="arrow" d="M800 555 L800 500"/>
+  <path class="arrow" d="M800 390 L800 335"/>
+  <path class="arrow" d="M925 280 C975 280, 1008 450, 1038 470"/>
+  <path class="arrow" d="M925 280 C1105 280, 1218 455, 1285 470"/>
+  <path class="arrow" d="M1355 528 L1355 615"/>
+  <path class="arrow" d="M800 335 C800 520, 800 725, 800 895"/>
+  <path class="arrow" d="M675 939 L565 939"/>
+  <path class="arrow" d="M365 939 L275 939"/>
+
+  <!-- Legend -->
+  <rect class="note" x="70" y="1110" width="1360" height="58"/>
+  <text class="step-title" x="95" y="1138">Workflow Summary</text>
+  <text class="step-text" x="250" y="1138">A company is registered, a dedicated table is created, the user selects that company, n8n classifies and routes the issue, MySQL stores it in the company-specific table, Gmail sends a detailed email, and Flask shows the final ticket status.</text>
+</svg>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeskPilot AI - Multi-Company Ticket Routing</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef3f8;
+      --panel: #ffffff;
+      --panel-soft: #f7fafc;
+      --text: #152235;
+      --muted: #62708a;
+      --primary: #1f7a8c;
+      --primary-dark: #155d6b;
+      --accent: #6a5acd;
+      --border: #d9e1ec;
+      --success: #227a4d;
+      --warning: #ad6800;
+      --error: #b42318;
+      --shadow: 0 18px 45px rgba(23, 32, 51, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: #12313f;
+      color: #ffffff;
+      border-bottom: 4px solid var(--primary);
+    }
+
+    .header-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 26px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: #cfe4ea;
+      line-height: 1.45;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+      gap: 22px;
+    }
+
+    .surface {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-soft);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.25;
+    }
+
+    .section-note {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.94rem;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+      padding: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 13px;
+      font: inherit;
+      color: var(--text);
+      background: #ffffff;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      padding: 13px 16px;
+      font: inherit;
+      font-weight: 700;
+      color: #ffffff;
+      background: var(--primary);
+      cursor: pointer;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      background: var(--accent);
+    }
+
+    button.secondary:hover {
+      background: #5747c6;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.68;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .stack {
+      display: grid;
+      gap: 22px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.94rem;
+    }
+
+    th {
+      color: #526174;
+      background: var(--panel-soft);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      background: #edf2f7;
+      border: 1px solid #dbe4ee;
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-size: 0.86rem;
+      color: #12313f;
+    }
+
+    .result {
+      margin: 0 22px 22px;
+      padding: 14px 16px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      display: none;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+    }
+
+    .result.success {
+      display: block;
+      color: var(--success);
+      border-color: rgba(34, 122, 77, 0.25);
+      background: rgba(34, 122, 77, 0.08);
+    }
+
+    .result.error {
+      display: block;
+      color: var(--error);
+      border-color: rgba(180, 35, 24, 0.25);
+      background: rgba(180, 35, 24, 0.08);
+    }
+
+    .result.warning {
+      display: block;
+      color: var(--warning);
+      border-color: rgba(173, 104, 0, 0.25);
+      background: rgba(173, 104, 0, 0.08);
+    }
+
+    @media (max-width: 860px) {
+      .header-inner,
+      main {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .header-inner,
+      main,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>DeskPilot AI</h1>
+        <p class="subtitle">Multi-company support ticket routing and SLA automation</p>
+      </div>
+      <div class="status-pill" id="companyCount">Loading companies...</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="surface">
+      <div class="section-header">
+        <h2>Raise Support Ticket</h2>
+        <p class="section-note">Tickets are routed to the selected company queue and stored in that company table.</p>
+      </div>
+
+      <form id="ticketForm">
+        <div class="form-grid">
+          <label>
+            Company
+            <select id="company_id" name="company_id" required>
+              <option value="">Loading companies...</option>
+            </select>
+          </label>
+
+          <label>
+            Issue Category
+            <select id="issue_type" name="issue_type" required>
+              <option value="">Select category</option>
+              <option value="login">Login Issue</option>
+              <option value="payment">Payment Failure</option>
+              <option value="technical">Technical / Bug Issue</option>
+              <option value="general">General Inquiry</option>
+            </select>
+          </label>
+
+          <label>
+            Email
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </label>
+
+          <label>
+            Priority
+            <select id="priority" name="priority" required>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+
+          <label class="full">
+            Issue Description
+            <textarea id="issue" name="issue" placeholder="Describe the issue you are facing..." required></textarea>
+          </label>
+        </div>
+
+        <button type="submit" id="submitTicket">Submit Ticket</button>
+      </form>
+
+      <div id="ticketResult" class="result" role="status" aria-live="polite"></div>
+    </section>
+
+    <div class="stack">
+      <section class="surface">
+        <div class="section-header">
+          <h2>Register Company</h2>
+          <p class="section-note">A dedicated MySQL ticket table is created for each company.</p>
+        </div>
+
+        <form id="companyForm">
+          <label>
+            Company Name
+            <input type="text" id="company_name" name="company_name" placeholder="Jio" minlength="2" required />
+          </label>
+
+          <button type="submit" class="secondary" id="registerCompany">Register Company</button>
+        </form>
+
+        <div id="companyResult" class="result" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="surface">
+        <div class="section-header">
+          <h2>Registered Company Queues</h2>
+          <p class="section-note">Each company keeps its tickets isolated in its own table.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Slug</th>
+                <th>Ticket Table</th>
+              </tr>
+            </thead>
+            <tbody id="companyRows">
+              <tr>
+                <td colspan="3">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const companySelect = document.getElementById("company_id");
+    const companyRows = document.getElementById("companyRows");
+    const companyCount = document.getElementById("companyCount");
+    const ticketForm = document.getElementById("ticketForm");
+    const companyForm = document.getElementById("companyForm");
+    const ticketButton = document.getElementById("submitTicket");
+    const companyButton = document.getElementById("registerCompany");
+    const ticketResult = document.getElementById("ticketResult");
+    const companyResult = document.getElementById("companyResult");
+
+    function showResult(element, type, message) {
+      element.className = `result ${type}`;
+      element.textContent = message;
+    }
+
+    function clearResult(element) {
+      element.className = "result";
+      element.textContent = "";
+    }
+
+    function renderCompanies(companies) {
+      companySelect.innerHTML = '<option value="">Select company</option>';
+      companyRows.innerHTML = "";
+      companyCount.textContent = `${companies.length} registered companies`;
+
+      if (!companies.length) {
+        companyRows.innerHTML = '<tr><td colspan="3">No companies registered.</td></tr>';
+        companySelect.innerHTML = '<option value="">No companies registered</option>';
+        return;
+      }
+
+      for (const company of companies) {
+        const option = document.createElement("option");
+        option.value = company.id;
+        option.textContent = company.name;
+        companySelect.appendChild(option);
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${company.name}</td>
+          <td><code>${company.slug}</code></td>
+          <td><code>${company.ticket_table}</code></td>
+        `;
+        companyRows.appendChild(row);
+      }
+    }
+
+    async function loadCompanies() {
+      try {
+        const response = await fetch("/api/companies");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Could not load companies.");
+        }
+
+        renderCompanies(data.companies);
+      } catch (error) {
+        companyCount.textContent = "Company database unavailable";
+        companySelect.innerHTML = '<option value="">Run database.sql first</option>';
+        companyRows.innerHTML = `<tr><td colspan="3">${error.message}</td></tr>`;
+      }
+    }
+
+    companyForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearResult(companyResult);
+      companyButton.disabled = true;
+
+      try {
+        const response = await fetch("/api/companies", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: companyForm.company_name.value,
+          }),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Company registration failed.");
+        }
+
+        companyForm.reset();
+        showResult(
+          companyResult,
+          "success",
+          `${data.message}\nTicket table: ${data.company.ticket_table}`
+        );
+        await loadCompanies();
+        companySelect.value = data.company.id;
+      } catch (error) {
+        showResult(companyResult, "error", error.message);
+      } finally {
+        companyButton.disabled = false;
+      }
+    });
+
+    ticketForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearResult(ticketResult);
+      ticketButton.disabled = true;
+
+      const payload = {
+        company_id: ticketForm.company_id.value,
+        issue_type: ticketForm.issue_type.value,
+        email: ticketForm.email.value,
+        issue: ticketForm.issue.value,
+        priority: ticketForm.priority.value,
+      };
+
+      try {
+        const response = await fetch("/submit-ticket", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || "Ticket submission failed.");
+        }
+
+        showResult(
+          ticketResult,
+          "success",
+          [
+            `${data.message}.`,
+            `Ticket ID: ${data.ticket_id ? `#${data.ticket_id}` : "Pending"}`,
+            `Company: ${data.company || "Pending"}`,
+            `Stored in: ${data.ticket_table || "Pending"}`,
+            `Assigned team: ${data.team || "Pending"}`,
+            `Priority: ${data.priority || "Pending"}`,
+            `SLA deadline: ${data.sla_deadline || "Pending"}`,
+          ].join("\n")
+        );
+      } catch (error) {
+        showResult(ticketResult, "error", error.message);
+      } finally {
+        ticketButton.disabled = false;
+      }
+    });
+
+    loadCompanies();
+  </script>
+</body>
+</html>

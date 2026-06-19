@@ -1,0 +1,215 @@
+{
+  "name": "DeskPilot AI â€“ Automated Support Ticket Routing System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deskpilot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "4f5f2cf1-9d51-4e88-b78f-54a514fd0981",
+      "name": "Webhook Node",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "deskpilot"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const payload = $json.body || $json;\nconst issue = String(payload.issue || payload.message || payload.description || \"\").trim();\nconst email = String(payload.email || payload.customer_email || payload.requester_email || payload.user_email || \"\").trim();\nconst issueText = issue.toLowerCase();\nconst selectedType = String(payload.issue_type || payload.category || \"general\").toLowerCase();\nconst issueTypeLabels = {\n  login: \"Login Issue\",\n  payment: \"Payment Failure\",\n  billing: \"Payment Failure\",\n  technical: \"Technical / Bug Issue\",\n  bug: \"Technical / Bug Issue\",\n  general: \"General Inquiry\"\n};\nconst issue_type_label = String(payload.issue_type_label || issueTypeLabels[selectedType] || \"General Inquiry\");\nconst user_priority = String(payload.user_priority || payload.priority || \"low\").toLowerCase();\nconst company_name = String(payload.company_name || payload.company || payload.companyName || payload.selected_company || \"Selected Company\").trim();\nconst company_id = String(payload.company_id || payload.companyId || payload.company_slug || company_name).trim();\nconst slugify = (value) => String(value || \"selected_company\")\n  .trim()\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, \"_\")\n  .replace(/^_+|_+$/g, \"\") || \"selected_company\";\nconst company_slug = String(payload.company_slug || slugify(company_name));\nconst ticket_table = String(payload.ticket_table || payload.table_name || `${company_slug}_tickets`);\n\nlet intent = \"General Inquiry\";\nlet ai_priority = \"low\";\nlet matched_signal = \"Selected category: General Inquiry\";\nlet classification_summary = \"The ticket was submitted as a general inquiry, so DeskPilot routed it for general support review.\";\nlet classifier_confidence = \"Low\";\n\nif (selectedType === \"login\" || issueText.includes(\"login\")) {\n  intent = \"Login Issue\";\n  ai_priority = \"high\";\n  matched_signal = selectedType === \"login\" ? \"Selected category: Login Issue\" : \"Keyword match: login\";\n  classification_summary = \"DeskPilot detected an account-access problem that can block the user from using the selected company's service.\";\n  classifier_confidence = \"High\";\n} else if (selectedType === \"payment\" || selectedType === \"billing\" || issueText.includes(\"payment\") || issueText.includes(\"refund\") || issueText.includes(\"invoice\") || issueText.includes(\"billing\")) {\n  intent = \"Payment Issue\";\n  ai_priority = \"high\";\n  matched_signal = selectedType === \"payment\" || selectedType === \"billing\" ? \"Selected category: Payment Failure\" : \"Keyword match: payment/refund/invoice/billing\";\n  classification_summary = \"DeskPilot detected a billing or transaction issue that should be handled by the selected company's billing queue quickly.\";\n  classifier_confidence = \"High\";\n} else if (selectedType === \"technical\" || selectedType === \"bug\" || issueText.includes(\"bug\") || issueText.includes(\"crash\") || issueText.includes(\"error\") || issueText.includes(\"technical\")) {\n  intent = \"Bug Report\";\n  ai_priority = \"medium\";\n  matched_signal = selectedType === \"technical\" || selectedType === \"bug\" ? \"Selected category: Technical / Bug Issue\" : \"Keyword match: bug/crash/error\";\n  classification_summary = \"DeskPilot detected a product defect, technical issue, or stability problem that should be reviewed by technical support.\";\n  classifier_confidence = \"Medium\";\n}\n\nreturn {\n  ...$json,\n  ...payload,\n  email,\n  issue,\n  issue_type: selectedType,\n  issue_type_label,\n  user_priority,\n  company_id,\n  company_name,\n  company_slug,\n  ticket_table,\n  ai_intent: intent,\n  ai_priority,\n  matched_signal,\n  classification_summary,\n  classifier_confidence\n};"
+      },
+      "id": "a0c0a5de-c7da-4d3a-b8e9-9b33b66f91a1",
+      "name": "AI Intent Classifier",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const escapeHtml = (value) => String(value ?? \"\")\n  .replace(/&/g, \"&amp;\")\n  .replace(/</g, \"&lt;\")\n  .replace(/>/g, \"&gt;\")\n  .replace(/\"/g, \"&quot;\")\n  .replace(/'/g, \"&#39;\");\n\nconst formatDate = (date) => new Intl.DateTimeFormat(\"en-IN\", {\n  dateStyle: \"medium\",\n  timeStyle: \"short\",\n  timeZone: \"Asia/Kolkata\"\n}).format(date);\n\nconst user_priority = String($json.user_priority || \"low\").toLowerCase();\nlet resolved_priority = user_priority;\nlet priority_reason = \"DeskPilot accepted the priority selected on the ticket form.\";\n\nif ($json.ai_priority === \"high\") {\n  resolved_priority = \"high\";\n  priority_reason = \"The AI classifier detected a high-impact issue and upgraded the final priority to high.\";\n} else if ($json.ai_priority === \"medium\" && user_priority === \"low\") {\n  resolved_priority = \"medium\";\n  priority_reason = \"The AI classifier detected a technical failure pattern and raised the ticket from low to medium.\";\n} else if (user_priority === \"high\") {\n  priority_reason = \"The user selected high priority, so DeskPilot preserved high handling urgency.\";\n}\n\nlet assigned_team = \"General Support\";\nlet sla_hours = 72;\nlet routing_reason = \"No specialized category was detected, so the ticket was routed to the selected company's general support queue.\";\nlet impact_statement = \"The selected company's support team will review the request, confirm the problem type, and route further if needed.\";\nlet response_plan = \"A support specialist will review the ticket, ask for any missing details, and provide next steps.\";\n\nif ($json.ai_intent === \"Login Issue\") {\n  assigned_team = \"Auth Support\";\n  sla_hours = 24;\n  routing_reason = \"Login and account-access issues are routed to Auth Support because they own authentication, credentials, and sign-in recovery.\";\n  impact_statement = \"The user may be blocked from accessing the selected company's service until the login issue is resolved.\";\n  response_plan = \"Auth Support will check account status, credential flow, recent login failures, and recovery options.\";\n} else if ($json.ai_intent === \"Payment Issue\") {\n  assigned_team = \"Billing Support\";\n  sla_hours = 12;\n  routing_reason = \"Payment, refund, invoice, and billing issues are routed to Billing Support because they own transaction investigation and account charges.\";\n  impact_statement = \"The request may affect billing accuracy, payment completion, or customer trust, so it receives accelerated handling.\";\n  response_plan = \"Billing Support will review transaction status, account billing records, failed payment details, and refund eligibility.\";\n} else if ($json.ai_intent === \"Bug Report\") {\n  assigned_team = \"Tech Team\";\n  sla_hours = 48;\n  routing_reason = \"Bug, crash, and error reports are routed to the Tech Team because they own product defects and stability investigation.\";\n  impact_statement = \"The issue may affect product reliability or prevent a workflow from completing as expected.\";\n  response_plan = \"The Tech Team will review reproduction details, affected feature area, logs if available, and possible workaround steps.\";\n}\n\nconst now = new Date();\nconst sla_deadline = new Date(now.getTime() + sla_hours * 60 * 60 * 1000);\nconst escalation = resolved_priority === \"high\" || sla_hours <= 24;\nconst priority_label = resolved_priority.charAt(0).toUpperCase() + resolved_priority.slice(1);\nconst user_priority_label = user_priority.charAt(0).toUpperCase() + user_priority.slice(1);\nconst ai_priority_label = String($json.ai_priority || \"low\").charAt(0).toUpperCase() + String($json.ai_priority || \"low\").slice(1);\nconst priority_style = {\n  high: { bg: \"#fff1f0\", border: \"#ffccc7\", text: \"#a8071a\" },\n  medium: { bg: \"#fff7e6\", border: \"#ffd591\", text: \"#ad6800\" },\n  low: { bg: \"#f6ffed\", border: \"#b7eb8f\", text: \"#237804\" }\n}[resolved_priority] || { bg: \"#eef2f7\", border: \"#d9e1ec\", text: \"#46556d\" };\n\nconst companyName = String($json.company_name || \"Selected Company\");\nconst tableName = String($json.ticket_table || \"company_ticket_table\");\nconst companySlug = String($json.company_slug || companyName || \"company\");\nconst companyPrefix = (companySlug.replace(/[^a-z0-9]/gi, \"\").toUpperCase().slice(0, 4) || \"DP\");\nconst randomPart = Math.floor(100000 + Math.random() * 900000).toString();\nconst timePart = now.getTime().toString(36).toUpperCase();\nconst ticket_id = companyPrefix + \"-\" + timePart + \"-\" + randomPart;\nconst database_issue = \"[DeskPilot Ticket ID: \" + ticket_id + \"] \" + String($json.issue || \"\");\n\nreturn {\n  ...$json,\n  ticket_id,\n  database_issue,\n  priority: resolved_priority,\n  priority_label,\n  user_priority_label,\n  ai_priority_label,\n  priority_reason,\n  priority_badge_bg: priority_style.bg,\n  priority_badge_border: priority_style.border,\n  priority_badge_text: priority_style.text,\n  assigned_team,\n  support_queue: companyName + \" / \" + assigned_team,\n  sla_hours,\n  sla_deadline: sla_deadline.toISOString(),\n  sla_deadline_display: formatDate(sla_deadline),\n  submitted_at: now.toISOString(),\n  submitted_at_display: formatDate(now),\n  customer_timezone: \"Asia/Kolkata\",\n  routing_reason,\n  impact_statement,\n  response_plan,\n  escalation,\n  escalation_status: escalation ? \"Escalation monitoring enabled\" : \"Standard monitoring\",\n  escalation_reason: escalation\n    ? \"High-priority or short-SLA tickets are flagged for closer monitoring by the assigned support queue.\"\n    : \"The current SLA window is within standard support handling, so no immediate escalation is required.\",\n  issue_html: escapeHtml($json.issue),\n  company_routing_note: \"This ticket is isolated to \" + companyName + \" and stored only in the MySQL table \" + tableName + \".\",\n  automation_summary: \"Webhook received the ticket, AI classified the issue, Routing & SLA Engine selected the company queue and SLA, MySQL stored the record in the company-specific table, and SMTP sent this confirmation.\"\n};"
+      },
+      "id": "c77e69d4-f42d-4059-8e77-b9c189483ecf",
+      "name": "Routing & SLA Engine",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "executeQuery",
+        "query": "INSERT INTO $1:name\n(company_id, company_name, email, issue_type, issue, intent, priority, assigned_team, sla_hours, sla_deadline, escalation)\nVALUES\n($2, $3, $4, $5, $6, $7, $8, $9, $10, STR_TO_DATE($11, '%Y-%m-%dT%H:%i:%s.%fZ'), $12);\n\nSELECT\n  $52 AS generated_ticket_id,\n  COALESCE($52, LAST_INSERT_ID()) AS ticket_id,\n  LAST_INSERT_ID() AS database_row_id,\n  $13 AS ticket_table,\n  $14 AS company_id,\n  $15 AS company_name,\n  $16 AS company_slug,\n  $17 AS email,\n  $18 AS issue_type,\n  $19 AS issue_type_label,\n  $20 AS issue,\n  $21 AS issue_html,\n  $22 AS ai_intent,\n  $23 AS ai_priority,\n  $24 AS ai_priority_label,\n  $25 AS user_priority,\n  $26 AS user_priority_label,\n  $27 AS priority,\n  $28 AS priority_label,\n  $29 AS priority_reason,\n  $30 AS priority_badge_bg,\n  $31 AS priority_badge_border,\n  $32 AS priority_badge_text,\n  $33 AS assigned_team,\n  $34 AS support_queue,\n  $35 AS sla_hours,\n  $36 AS sla_deadline,\n  $37 AS sla_deadline_display,\n  $38 AS submitted_at,\n  $39 AS submitted_at_display,\n  $40 AS customer_timezone,\n  $41 AS escalation,\n  $42 AS escalation_status,\n  $43 AS escalation_reason,\n  $44 AS classification_summary,\n  $45 AS classifier_confidence,\n  $46 AS matched_signal,\n  $47 AS routing_reason,\n  $48 AS impact_statement,\n  $49 AS response_plan,\n  $50 AS company_routing_note,\n  $51 AS automation_summary;",
+        "options": {
+          "queryBatching": "independently",
+          "queryReplacement": "={{ [\n  $json.ticket_table,\n  $json.company_id,\n  $json.company_name,\n  $json.email,\n  $json.issue_type_label,\n  $json.database_issue || $json.issue,\n  $json.ai_intent,\n  $json.priority,\n  $json.assigned_team,\n  $json.sla_hours,\n  $json.sla_deadline,\n  $json.escalation,\n  $json.ticket_table,\n  $json.company_id,\n  $json.company_name,\n  $json.company_slug,\n  $json.email,\n  $json.issue_type,\n  $json.issue_type_label,\n  $json.issue,\n  $json.issue_html,\n  $json.ai_intent,\n  $json.ai_priority,\n  $json.ai_priority_label,\n  $json.user_priority,\n  $json.user_priority_label,\n  $json.priority,\n  $json.priority_label,\n  $json.priority_reason,\n  $json.priority_badge_bg,\n  $json.priority_badge_border,\n  $json.priority_badge_text,\n  $json.assigned_team,\n  $json.support_queue,\n  $json.sla_hours,\n  $json.sla_deadline,\n  $json.sla_deadline_display,\n  $json.submitted_at,\n  $json.submitted_at_display,\n  $json.customer_timezone,\n  $json.escalation,\n  $json.escalation_status,\n  $json.escalation_reason,\n  $json.classification_summary,\n  $json.classifier_confidence,\n  $json.matched_signal,\n  $json.routing_reason,\n  $json.impact_statement,\n  $json.response_plan,\n  $json.company_routing_note,\n  $json.automation_summary,\n  $json.ticket_id\n] }}"
+        }
+      },
+      "id": "e7ee1ca6-c03f-4be8-acb7-449c7a80d78f",
+      "name": "Execute a SQL query",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        1020,
+        300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "fRYvV1vjULGEZckc",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const routed = $('Routing & SLA Engine').first().json;\nconst sqlItems = $input.all().map((item) => item.json || {});\nconst sql = sqlItems.find((item) => item.ticket_id) || sqlItems[sqlItems.length - 1] || {};\nconst merged = {\n  ...routed,\n  ...sql,\n  ticket_id: sql.generated_ticket_id || sql.ticket_id || routed.ticket_id,\n  database_row_id: sql.database_row_id || routed.database_row_id || null,\n  email: sql.email || routed.email,\n  company_name: sql.company_name || routed.company_name || \"Selected Company\",\n  company_slug: sql.company_slug || routed.company_slug || \"selected_company\",\n  ticket_table: sql.ticket_table || routed.ticket_table || \"company_ticket_table\",\n  issue_type_label: sql.issue_type_label || routed.issue_type_label || \"General Inquiry\",\n  issue: sql.issue || routed.issue,\n  issue_html: sql.issue_html || routed.issue_html,\n  ai_intent: sql.ai_intent || routed.ai_intent,\n  ai_priority: sql.ai_priority || routed.ai_priority,\n  ai_priority_label: sql.ai_priority_label || routed.ai_priority_label,\n  user_priority: sql.user_priority || routed.user_priority,\n  user_priority_label: sql.user_priority_label || routed.user_priority_label,\n  priority: sql.priority || routed.priority,\n  priority_label: sql.priority_label || routed.priority_label,\n  assigned_team: sql.assigned_team || routed.assigned_team,\n  support_queue: sql.support_queue || routed.support_queue,\n  sla_hours: sql.sla_hours || routed.sla_hours,\n  sla_deadline_display: sql.sla_deadline_display || routed.sla_deadline_display,\n  submitted_at_display: sql.submitted_at_display || routed.submitted_at_display,\n  customer_timezone: sql.customer_timezone || routed.customer_timezone || \"Asia/Kolkata\",\n  escalation_status: sql.escalation_status || routed.escalation_status,\n  escalation_reason: sql.escalation_reason || routed.escalation_reason,\n  classification_summary: sql.classification_summary || routed.classification_summary,\n  classifier_confidence: sql.classifier_confidence || routed.classifier_confidence,\n  matched_signal: sql.matched_signal || routed.matched_signal,\n  routing_reason: sql.routing_reason || routed.routing_reason,\n  impact_statement: sql.impact_statement || routed.impact_statement,\n  response_plan: sql.response_plan || routed.response_plan,\n  company_routing_note: sql.company_routing_note || routed.company_routing_note,\n  automation_summary: sql.automation_summary || routed.automation_summary\n};\nreturn [{ json: merged }];"
+      },
+      "id": "b7f3f2ac-91cb-4a8f-b0ef-8c1f3d4a2e91",
+      "name": "Prepare Confirmation Email Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "email",
+        "operation": "send",
+        "fromEmail": "prathamsrivastava.0128@gmail.com",
+        "toEmail": "={{$json.email}}",
+        "subject": "=DeskPilot Ticket #{{$json.ticket_id}} - {{$json.company_name}} / {{$json.assigned_team}}",
+        "emailFormat": "both",
+        "html": "=<!doctype html><html><body style=\"margin:0;padding:0;background:#edf3f8;font-family:Arial,Helvetica,sans-serif;color:#162033;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#edf3f8;margin:0;padding:0;\"><tr><td align=\"center\" style=\"padding:30px 12px;\"><table role=\"presentation\" width=\"780\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:780px;max-width:100%;background:#ffffff;border:1px solid #dbe4ee;border-radius:8px;overflow:hidden;\"><tr><td style=\"background:#12313f;padding:30px;color:#ffffff;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><div style=\"font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#b9dce4;font-weight:700;\">DeskPilot AI</div><div style=\"font-size:28px;line-height:1.25;font-weight:700;margin-top:8px;\">Ticket received for {{$json.company_name}}</div><div style=\"font-size:14px;line-height:1.6;color:#d8e8ed;margin-top:10px;\">The ticket was classified, assigned to a company-specific support queue, stored in an isolated MySQL table, and confirmed by email.</div></td><td align=\"right\" style=\"vertical-align:top;\"><div style=\"display:inline-block;background:#e6fffb;color:#006d75;border:1px solid #87e8de;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;white-space:nowrap;\">Status: Received</div></td></tr></table></td></tr><tr><td style=\"padding:24px 30px 8px;\"><p style=\"margin:0 0 18px;font-size:16px;line-height:1.7;\">Hello,</p><p style=\"margin:0 0 22px;font-size:16px;line-height:1.7;\">Your support request for <strong>{{$json.company_name}}</strong> has been registered. DeskPilot AI detected <strong>{{$json.ai_intent}}</strong> and routed the ticket to <strong>{{$json.support_queue}}</strong>.</p><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td width=\"25%\" style=\"padding:0 8px 12px 0;\"><div style=\"border:1px solid #dfe7f1;border-radius:8px;padding:14px;background:#f8fbff;\"><div style=\"font-size:12px;color:#65758b;font-weight:700;text-transform:uppercase;\">Ticket ID</div><div style=\"font-size:22px;font-weight:700;margin-top:6px;color:#12313f;\">#{{$json.ticket_id}}</div></div></td><td width=\"25%\" style=\"padding:0 8px 12px;\"><div style=\"border:1px solid #dfe7f1;border-radius:8px;padding:14px;background:#f8fbff;\"><div style=\"font-size:12px;color:#65758b;font-weight:700;text-transform:uppercase;\">Company</div><div style=\"font-size:18px;font-weight:700;margin-top:6px;color:#12313f;\">{{$json.company_name}}</div></div></td><td width=\"25%\" style=\"padding:0 8px 12px;\"><div style=\"border:1px solid {{$json.priority_badge_border}};border-radius:8px;padding:14px;background:{{$json.priority_badge_bg}};\"><div style=\"font-size:12px;color:#65758b;font-weight:700;text-transform:uppercase;\">Priority</div><div style=\"font-size:18px;font-weight:700;margin-top:6px;color:{{$json.priority_badge_text}};\">{{$json.priority_label}}</div></div></td><td width=\"25%\" style=\"padding:0 0 12px 8px;\"><div style=\"border:1px solid #dfe7f1;border-radius:8px;padding:14px;background:#f8fbff;\"><div style=\"font-size:12px;color:#65758b;font-weight:700;text-transform:uppercase;\">SLA</div><div style=\"font-size:18px;font-weight:700;margin-top:6px;color:#12313f;\">{{$json.sla_hours}} hours</div></div></td></tr></table></td></tr><tr><td style=\"padding:8px 30px 0;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;overflow:hidden;\"><tr><td style=\"background:#f7fafc;padding:14px 16px;border-bottom:1px solid #e0e7f0;font-size:15px;font-weight:700;color:#12313f;\">Company Storage Isolation</td></tr><tr><td style=\"padding:16px;color:#38465a;font-size:14px;line-height:1.65;\"><strong>Selected company:</strong> {{$json.company_name}}<br><strong>Company slug:</strong> {{$json.company_slug}}<br><strong>MySQL ticket table:</strong> {{$json.ticket_table}}<br><strong>Isolation rule:</strong> {{$json.company_routing_note}}</td></tr></table></td></tr><tr><td style=\"padding:18px 30px 0;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;overflow:hidden;\"><tr><td style=\"background:#f7fafc;padding:14px 16px;border-bottom:1px solid #e0e7f0;font-size:15px;font-weight:700;color:#12313f;\">Ticket Details</td></tr><tr><td style=\"padding:0;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"width:32%;padding:13px 16px;background:#fbfdff;border-bottom:1px solid #edf1f6;font-weight:700;color:#526174;\">Requester Email</td><td style=\"padding:13px 16px;border-bottom:1px solid #edf1f6;\">{{$json.email}}</td></tr><tr><td style=\"padding:13px 16px;background:#fbfdff;border-bottom:1px solid #edf1f6;font-weight:700;color:#526174;\">Issue Category</td><td style=\"padding:13px 16px;border-bottom:1px solid #edf1f6;\">{{$json.issue_type_label}}</td></tr><tr><td style=\"padding:13px 16px;background:#fbfdff;border-bottom:1px solid #edf1f6;font-weight:700;color:#526174;\">Submitted At</td><td style=\"padding:13px 16px;border-bottom:1px solid #edf1f6;\">{{$json.submitted_at_display}} {{$json.customer_timezone}}</td></tr><tr><td style=\"padding:13px 16px;background:#fbfdff;border-bottom:1px solid #edf1f6;font-weight:700;color:#526174;\">Issue Description</td><td style=\"padding:13px 16px;border-bottom:1px solid #edf1f6;line-height:1.6;\">{{$json.issue_html}}</td></tr><tr><td style=\"padding:13px 16px;background:#fbfdff;font-weight:700;color:#526174;\">Current Status</td><td style=\"padding:13px 16px;\">Received, classified, stored, and assigned</td></tr></table></td></tr></table></td></tr><tr><td style=\"padding:18px 30px 0;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td width=\"50%\" style=\"padding:0 9px 0 0;vertical-align:top;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;\"><tr><td style=\"padding:16px 16px 8px;font-size:15px;font-weight:700;color:#12313f;\">AI Classification</td></tr><tr><td style=\"padding:0 16px 16px;color:#38465a;font-size:14px;line-height:1.65;\"><div><strong>Detected intent:</strong> {{$json.ai_intent}}</div><div><strong>AI priority:</strong> {{$json.ai_priority_label}}</div><div><strong>Confidence:</strong> {{$json.classifier_confidence}}</div><div><strong>Matched signal:</strong> {{$json.matched_signal}}</div><div style=\"margin-top:10px;color:#526174;\">{{$json.classification_summary}}</div></td></tr></table></td><td width=\"50%\" style=\"padding:0 0 0 9px;vertical-align:top;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;\"><tr><td style=\"padding:16px 16px 8px;font-size:15px;font-weight:700;color:#12313f;\">Routing Decision</td></tr><tr><td style=\"padding:0 16px 16px;color:#38465a;font-size:14px;line-height:1.65;\"><div><strong>Support queue:</strong> {{$json.support_queue}}</div><div><strong>User priority:</strong> {{$json.user_priority_label}}</div><div><strong>Final priority:</strong> {{$json.priority_label}}</div><div style=\"margin-top:10px;color:#526174;\">{{$json.routing_reason}}</div></td></tr></table></td></tr></table></td></tr><tr><td style=\"padding:18px 30px 0;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;overflow:hidden;\"><tr><td style=\"background:#f7fafc;padding:14px 16px;border-bottom:1px solid #e0e7f0;font-size:15px;font-weight:700;color:#12313f;\">SLA and Escalation Plan</td></tr><tr><td style=\"padding:16px;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td width=\"33.33%\" style=\"padding:0 10px 0 0;vertical-align:top;\"><div style=\"font-size:12px;text-transform:uppercase;font-weight:700;color:#65758b;\">SLA Deadline</div><div style=\"font-size:16px;line-height:1.4;font-weight:700;color:#12313f;margin-top:6px;\">{{$json.sla_deadline_display}}</div><div style=\"font-size:12px;color:#65758b;margin-top:4px;\">{{$json.customer_timezone}}</div></td><td width=\"33.33%\" style=\"padding:0 10px;vertical-align:top;\"><div style=\"font-size:12px;text-transform:uppercase;font-weight:700;color:#65758b;\">Escalation</div><div style=\"font-size:16px;line-height:1.4;font-weight:700;color:#12313f;margin-top:6px;\">{{$json.escalation_status}}</div></td><td width=\"33.33%\" style=\"padding:0 0 0 10px;vertical-align:top;\"><div style=\"font-size:12px;text-transform:uppercase;font-weight:700;color:#65758b;\">Response Plan</div><div style=\"font-size:14px;line-height:1.55;color:#38465a;margin-top:6px;\">{{$json.response_plan}}</div></td></tr></table><div style=\"border-top:1px solid #edf1f6;margin-top:16px;padding-top:14px;color:#526174;font-size:14px;line-height:1.6;\"><strong>Priority reason:</strong> {{$json.priority_reason}}<br><strong>Escalation reason:</strong> {{$json.escalation_reason}}</div></td></tr></table></td></tr><tr><td style=\"padding:18px 30px 0;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr><td width=\"50%\" style=\"padding:0 9px 0 0;vertical-align:top;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;\"><tr><td style=\"padding:16px;font-size:15px;font-weight:700;color:#12313f;\">Customer Impact</td></tr><tr><td style=\"padding:0 16px 16px;color:#526174;font-size:14px;line-height:1.65;\">{{$json.impact_statement}}</td></tr></table></td><td width=\"50%\" style=\"padding:0 0 0 9px;vertical-align:top;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e0e7f0;border-radius:8px;\"><tr><td style=\"padding:16px;font-size:15px;font-weight:700;color:#12313f;\">Automation Trail</td></tr><tr><td style=\"padding:0 16px 16px;color:#526174;font-size:14px;line-height:1.65;\">{{$json.automation_summary}}</td></tr></table></td></tr></table></td></tr><tr><td style=\"padding:20px 30px 26px;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#f7fbf9;border:1px solid #d6eadf;border-radius:8px;\"><tr><td style=\"padding:16px 18px;\"><div style=\"font-size:15px;font-weight:700;color:#12313f;margin-bottom:8px;\">What happens next</div><div style=\"font-size:14px;line-height:1.7;color:#38465a;\">1. The company-specific queue reviews the ticket details and validates the classification.<br>2. The assigned team investigates the issue according to the response plan above.<br>3. If more information is needed, support will reply to this email thread.</div></td></tr></table><p style=\"margin:22px 0 0;font-size:15px;line-height:1.6;color:#38465a;\">Thank you,<br><strong>DeskPilot AI Support Automation</strong></p></td></tr><tr><td style=\"background:#f7fafc;border-top:1px solid #e0e7f0;padding:16px 30px;color:#65758b;font-size:12px;line-height:1.6;text-align:center;\">This confirmation was generated automatically by DeskPilot AI after the ticket passed through Webhook, AI Intent Classifier, Routing & SLA Engine, company-specific MySQL storage, and SMTP delivery.</td></tr></table></td></tr></table></body></html>",
+        "options": {
+          "appendAttribution": false
+        },
+        "text": "=DeskPilot AI Ticket Confirmation\n\nCompany: {{$json.company_name}}\nCompany Table: {{$json.ticket_table}}\nTicket ID: #{{$json.ticket_id}}\nStatus: Received and routed\nSubmitted: {{$json.submitted_at_display}} {{$json.customer_timezone}}\n\nRequester: {{$json.email}}\nIssue Category: {{$json.issue_type_label}}\nIssue: {{$json.issue}}\n\nAI Classification\nDetected Intent: {{$json.ai_intent}}\nAI Priority: {{$json.ai_priority_label}}\nClassifier Confidence: {{$json.classifier_confidence}}\nMatched Signal: {{$json.matched_signal}}\nSummary: {{$json.classification_summary}}\n\nRouting and Priority\nSupport Queue: {{$json.support_queue}}\nUser Priority: {{$json.user_priority_label}}\nFinal Priority: {{$json.priority_label}}\nPriority Reason: {{$json.priority_reason}}\nRouting Reason: {{$json.routing_reason}}\nCompany Isolation: {{$json.company_routing_note}}\n\nSLA and Escalation\nSLA Window: {{$json.sla_hours}} hours\nSLA Deadline: {{$json.sla_deadline_display}} {{$json.customer_timezone}}\nEscalation: {{$json.escalation_status}}\nEscalation Reason: {{$json.escalation_reason}}\n\nResponse Plan\n{{$json.response_plan}}\n\nAutomation Trail\n{{$json.automation_summary}}\n\nThank you,\nDeskPilot AI"
+      },
+      "id": "c98a27d8-6d2b-4517-85cf-fd6ef0b1e69c",
+      "name": "Send Ticket Confirmation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1420,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "S8bRGxZbErggHGRO",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"status\": \"success\",\n  \"message\": \"Ticket created successfully\",\n  \"ticket_id\": $(\"Prepare Confirmation Email Data\").item.json.ticket_id,\n  \"database_row_id\": $(\"Prepare Confirmation Email Data\").item.json.database_row_id,\n  \"company\": $(\"Prepare Confirmation Email Data\").item.json.company_name,\n  \"ticket_table\": $(\"Prepare Confirmation Email Data\").item.json.ticket_table,\n  \"team\": $(\"Prepare Confirmation Email Data\").item.json.assigned_team,\n  \"priority\": $(\"Prepare Confirmation Email Data\").item.json.priority,\n  \"sla_deadline\": $(\"Prepare Confirmation Email Data\").item.json.sla_deadline_display\n} }}",
+        "options": {}
+      },
+      "id": "ea9b7122-b01a-47f3-b193-6d335f47eb8a",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Node": {
+      "main": [
+        [
+          {
+            "node": "AI Intent Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Intent Classifier": {
+      "main": [
+        [
+          {
+            "node": "Routing & SLA Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Routing & SLA Engine": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Prepare Confirmation Email Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Confirmation Email Data": {
+      "main": [
+        [
+          {
+            "node": "Send Ticket Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Ticket Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2ba66c5e-9f8b-4efe-abdd-605513578cba",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "deskpilot-ai-workflow",
+  "tags": []
+}

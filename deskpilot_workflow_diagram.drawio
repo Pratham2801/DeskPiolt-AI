@@ -1,0 +1,144 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="deskpilot-workflow" name="DeskPilot Workflow">
+    <mxGraphModel dx="2289" dy="1249" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=34;fontStyle=1;fontColor=#172033;" value="DeskPilot AI - Workflow Timeline" vertex="1">
+          <mxGeometry height="50" width="720" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontColor=#64748B;" value="Expanded n8n automation flow with company-specific MySQL storage and detailed Gmail confirmation." vertex="1">
+          <mxGeometry height="34" width="900" x="60" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="lane1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F766E;strokeColor=#0F766E;fontColor=#FFFFFF;fontStyle=1;fontSize=14;" value="USER / PORTAL" vertex="1">
+          <mxGeometry height="42" width="260" x="60" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2563EB;strokeColor=#2563EB;fontColor=#FFFFFF;fontStyle=1;fontSize=14;" value="FLASK APP" vertex="1">
+          <mxGeometry height="42" width="260" x="380" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C2410C;strokeColor=#C2410C;fontColor=#FFFFFF;fontStyle=1;fontSize=14;" value="N8N AUTOMATION - EXPANDED" vertex="1">
+          <mxGeometry height="42" width="420" x="700" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6D28D9;strokeColor=#6D28D9;fontColor=#FFFFFF;fontStyle=1;fontSize=14;" value="MYSQL / EMAIL OUTPUTS" vertex="1">
+          <mxGeometry height="42" width="300" x="1180" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDFA;strokeColor=#14B8A6;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="1. User Opens Portal&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;User visits localhost:5000 and sees company queues.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="95" width="230" x="80" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDFA;strokeColor=#14B8A6;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="2. Select Ticket Inputs&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Company, issue category, priority, email, issue description.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="230" x="75" y="437.5" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDFA;strokeColor=#14B8A6;strokeWidth=2;fontColor=#172033;fontSize=15;fontStyle=1;spacing=12;" value="Optional Company Registration&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Admin registers Jio or another company before users submit tickets.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="230" x="890" y="237.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wYExgvFxQnEuiqGWDrPj-2" edge="1" parent="1" source="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" target="s2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wYExgvFxQnEuiqGWDrPj-3" edge="1" parent="1" source="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="3. Load Companies&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;GET /api/companies reads MySQL companies table and fills dropdown.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="230" x="400" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="4. Validate Ticket&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;POST /submit-ticket checks company_id, issue type, priority, and required fields.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="125" width="230" x="400" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="5. Create Company Table&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Creates slug and ticket table. Example: Jio → tickets_jio.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="230" x="1240" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="13. Frontend Result&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Shows ticket ID, company, table, team, priority, and SLA deadline.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="115" width="230" x="400" y="1505" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;" value="Company Found?" vertex="1">
+          <mxGeometry height="140" width="160" x="810" y="422.5" as="geometry" />
+        </mxCell>
+        <mxCell id="err" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE2E2;strokeColor=#DC2626;strokeWidth=2;fontColor=#172033;fontSize=15;fontStyle=1;spacing=12;" value="Stop With Error&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Ask user to select a registered company.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="235" x="1180" y="442.5" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="6. Webhook Node&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Receives POST /webhook/deskpilot from Flask with company metadata.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="360" x="720" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="7. AI - Intent Classifier&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Uses $json, issue category, and text keywords to detect Login, Payment, Bug, or General Inquiry.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="125" width="360" x="720" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="rules" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEDD5;strokeColor=#EA580C;strokeWidth=2;fontColor=#172033;fontSize=15;fontStyle=1;spacing=12;" value="Intent Rules&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;login → Login Issue / high&lt;br&gt;payment/refund → Payment Issue / high&lt;br&gt;bug/crash/error → Bug Report / medium&lt;br&gt;other → General Inquiry / low&lt;/font&gt;" vertex="1">
+          <mxGeometry height="155" width="265" x="1180" y="775" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="8. Routing and SLA Engine&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Combines user priority and AI priority, assigns team, calculates SLA, escalation, routing reason, and response plan.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="140" width="360" x="720" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="policy" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontColor=#172033;fontSize=15;fontStyle=1;spacing=12;" value="Team / SLA Policy&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Login → Auth Support / 24h&lt;br&gt;Payment → Billing Support / 12h&lt;br&gt;Bug → Tech Team / 48h&lt;br&gt;General → General Support / 72h&lt;/font&gt;" vertex="1">
+          <mxGeometry height="155" width="270" x="80" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="9. Execute SQL Query&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Uses dynamic table name from ticket_table and inserts into the selected company&#39;s ticket table.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="125" width="360" x="720" y="1215" as="geometry" />
+        </mxCell>
+        <mxCell id="db1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;strokeWidth=2;fontColor=#172033;fontSize=15;fontStyle=1;spacing=12;" value="Company-Specific MySQL Tables&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;tickets_amazon&lt;br&gt;tickets_flipkart&lt;br&gt;tickets_myntra&lt;br&gt;tickets_jio&lt;br&gt;tickets_companyslug&lt;/font&gt;" vertex="1">
+          <mxGeometry height="170" width="265" x="1180" y="1195" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE4E6;strokeColor=#E11D48;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="10. Send Ticket Confirmation Email&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Gmail SMTP sends rich designer email with company, table, ticket ID, team, priority, routing reason, and SLA.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="135" width="360" x="720" y="1420" as="geometry" />
+        </mxCell>
+        <mxCell id="mail" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE4E6;strokeColor=#E11D48;strokeWidth=2;fontColor=#172033;fontSize=15;fontStyle=1;spacing=12;" value="User Inbox&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Receives detailed ticket confirmation email.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="235" x="1180" y="1435" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CCFBF1;strokeColor=#0F766E;strokeWidth=2;fontColor=#172033;fontSize=16;fontStyle=1;spacing=12;" value="11. Respond to Webhook&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Returns success JSON to Flask with ticket_id, company, ticket_table, team, priority, and SLA deadline.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="125" width="360" x="720" y="1635" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="s1" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="f1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="s2" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="f2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="f3" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1120" y="305" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="f2" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="d1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="d1" style="endArrow=block;html=1;rounded=0;strokeColor=#DC2626;strokeWidth=2.5;fontColor=#DC2626;fontStyle=1;" target="err" value="No">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="d1" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;fontColor=#334155;fontStyle=1;" target="n1" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="n1" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="n2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="n2" style="endArrow=block;html=1;rounded=0;strokeColor=#64748B;strokeWidth=2;dashed=1;" target="rules" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="n2" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="n3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="policy" style="endArrow=block;html=1;rounded=0;strokeColor=#64748B;strokeWidth=2;dashed=1;" target="n3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="n3" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="n4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="n4" style="endArrow=block;html=1;rounded=0;strokeColor=#64748B;strokeWidth=2;dashed=1;" target="db1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="n4" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="n5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="n5" style="endArrow=block;html=1;rounded=0;strokeColor=#64748B;strokeWidth=2;dashed=1;" target="mail" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="n5" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="n6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="n6" style="endArrow=block;html=1;rounded=0;strokeColor=#334155;strokeWidth=2.5;" target="f4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#475569;fontSize=14;spacing=14;" value="Workflow focus: this diagram shows the time-ordered ticket journey, with n8n expanded into classifier, intent rules, routing/SLA logic, SQL insert, email, and webhook response." vertex="1">
+          <mxGeometry height="70" width="1420" x="60" y="1840" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#344054"/>
+    </marker>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font: 700 38px Arial, Helvetica, sans-serif; fill: #111827; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #667085; }
+      .section { fill: #f8fafc; stroke: #d0d5dd; stroke-width: 2; rx: 16; }
+      .section-title { font: 700 20px Arial, Helvetica, sans-serif; fill: #344054; }
+      .box { fill: #ffffff; stroke: #98a2b3; stroke-width: 2; rx: 12; }
+      .box-blue { fill: #eff8ff; stroke: #2e90fa; }
+      .box-green { fill: #ecfdf3; stroke: #12b76a; }
+      .box-purple { fill: #f4f3ff; stroke: #7a5af8; }
+      .box-orange { fill: #fff6ed; stroke: #fb6514; }
+      .box-red { fill: #fff1f3; stroke: #f04438; }
+      .box-gray { fill: #f9fafb; stroke: #98a2b3; }
+      .label { font: 700 18px Arial, Helvetica, sans-serif; fill: #101828; }
+      .small { font: 400 14px Arial, Helvetica, sans-serif; fill: #475467; }
+      .tiny { font: 400 12px Arial, Helvetica, sans-serif; fill: #667085; }
+      .arrow { fill: none; stroke: #344054; stroke-width: 2.4; marker-end: url(#arrow); }
+      .dash { fill: none; stroke: #667085; stroke-width: 2.2; stroke-dasharray: 8 6; marker-end: url(#arrow); }
+      .badge { fill: #ffffff; stroke: #d0d5dd; rx: 16; }
+      .badge-text { font: 700 13px Arial, Helvetica, sans-serif; fill: #344054; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1000"/>
+
+  <text class="title" x="80" y="70">DeskPilot AI - Automated Support Ticket Routing System</text>
+  <text class="subtitle" x="80" y="102">Multi-company support portal with Flask, n8n automation, MySQL company tables, and Gmail SMTP confirmations</text>
+
+  <rect class="section" x="50" y="150" width="360" height="720"/>
+  <text class="section-title" x="80" y="190">Frontend Portal</text>
+
+  <rect class="section" x="460" y="150" width="330" height="720"/>
+  <text class="section-title" x="490" y="190">Flask Backend</text>
+
+  <rect class="section" x="840" y="150" width="330" height="720"/>
+  <text class="section-title" x="870" y="190">n8n Workflow</text>
+
+  <rect class="section" x="1220" y="150" width="330" height="720"/>
+  <text class="section-title" x="1250" y="190">Storage and Email</text>
+
+  <rect class="box box-blue" x="95" y="230" width="270" height="90"/>
+  <text class="label" x="130" y="266">User / Customer</text>
+  <text class="small" x="130" y="292">Selects company, issue type,</text>
+  <text class="small" x="130" y="314">priority, email, and issue</text>
+
+  <rect class="box box-purple" x="95" y="380" width="270" height="90"/>
+  <text class="label" x="130" y="416">Company Admin</text>
+  <text class="small" x="130" y="442">Registers a company such as</text>
+  <text class="small" x="130" y="464">Amazon, Flipkart, Myntra, Jio</text>
+
+  <rect class="box box-gray" x="95" y="540" width="270" height="110"/>
+  <text class="label" x="130" y="575">DeskPilot Web UI</text>
+  <text class="small" x="130" y="602">Company dropdown</text>
+  <text class="small" x="130" y="626">Issue category dropdown</text>
+  <text class="small" x="130" y="650">Registration form</text>
+
+  <rect class="box box-green" x="500" y="230" width="250" height="105"/>
+  <text class="label" x="535" y="266">Flask Routes</text>
+  <text class="small" x="535" y="292">/api/companies</text>
+  <text class="small" x="535" y="316">/submit-ticket</text>
+
+  <rect class="box box-orange" x="500" y="395" width="250" height="115"/>
+  <text class="label" x="535" y="431">Company Logic</text>
+  <text class="small" x="535" y="458">Create slug</text>
+  <text class="small" x="535" y="482">Create ticket table</text>
+  <text class="small" x="535" y="506">Validate selected company</text>
+
+  <rect class="box box-blue" x="500" y="590" width="250" height="105"/>
+  <text class="label" x="535" y="626">Webhook Payload</text>
+  <text class="small" x="535" y="652">Company + table name</text>
+  <text class="small" x="535" y="676">Ticket details sent to n8n</text>
+
+  <rect class="box box-purple" x="880" y="215" width="250" height="88"/>
+  <text class="label" x="915" y="251">Webhook Node</text>
+  <text class="small" x="915" y="277">POST /webhook/deskpilot</text>
+
+  <rect class="box box-purple" x="880" y="345" width="250" height="105"/>
+  <text class="label" x="915" y="381">AI Intent Classifier</text>
+  <text class="small" x="915" y="407">Login / Payment / Bug</text>
+  <text class="small" x="915" y="431">Rule-based AI logic</text>
+
+  <rect class="box box-purple" x="880" y="500" width="250" height="115"/>
+  <text class="label" x="915" y="536">Routing &amp; SLA Engine</text>
+  <text class="small" x="915" y="562">Resolve priority</text>
+  <text class="small" x="915" y="586">Assign support team</text>
+  <text class="small" x="915" y="610">Calculate SLA deadline</text>
+
+  <rect class="box box-purple" x="880" y="670" width="250" height="105"/>
+  <text class="label" x="915" y="706">Respond to Webhook</text>
+  <text class="small" x="915" y="732">Ticket ID, company, table,</text>
+  <text class="small" x="915" y="756">team, priority, SLA</text>
+
+  <rect class="box box-green" x="1260" y="215" width="250" height="95"/>
+  <text class="label" x="1295" y="251">MySQL companies</text>
+  <text class="small" x="1295" y="277">Registered companies</text>
+  <text class="small" x="1295" y="299">and ticket table names</text>
+
+  <rect class="box box-green" x="1260" y="360" width="250" height="145"/>
+  <text class="label" x="1295" y="396">Company Tables</text>
+  <text class="small" x="1295" y="424">tickets_amazon</text>
+  <text class="small" x="1295" y="448">tickets_flipkart</text>
+  <text class="small" x="1295" y="472">tickets_myntra</text>
+  <text class="small" x="1295" y="496">tickets_jio</text>
+
+  <rect class="box box-red" x="1260" y="560" width="250" height="115"/>
+  <text class="label" x="1295" y="596">Gmail SMTP</text>
+  <text class="small" x="1295" y="622">Detailed designer email</text>
+  <text class="small" x="1295" y="646">Ticket summary, routing,</text>
+  <text class="small" x="1295" y="670">SLA, escalation details</text>
+
+  <rect class="box box-blue" x="1260" y="730" width="250" height="95"/>
+  <text class="label" x="1295" y="766">User Inbox</text>
+  <text class="small" x="1295" y="792">Receives confirmation</text>
+  <text class="small" x="1295" y="814">for selected company</text>
+
+  <path class="arrow" d="M365 275 C420 275 440 275 500 275"/>
+  <path class="arrow" d="M365 425 C425 425 440 452 500 452"/>
+  <path class="arrow" d="M625 335 L625 395"/>
+  <path class="arrow" d="M625 510 L625 590"/>
+  <path class="arrow" d="M750 642 C810 642 820 259 880 259"/>
+
+  <path class="arrow" d="M1005 303 L1005 345"/>
+  <path class="arrow" d="M1005 450 L1005 500"/>
+  <path class="arrow" d="M1005 615 L1005 670"/>
+
+  <path class="arrow" d="M750 452 C980 452 1015 262 1260 262"/>
+  <path class="arrow" d="M1130 557 C1190 557 1200 432 1260 432"/>
+  <path class="arrow" d="M1130 557 C1190 557 1200 617 1260 617"/>
+  <path class="arrow" d="M1385 675 L1385 730"/>
+  <path class="dash" d="M880 725 C690 725 555 725 365 595"/>
+  <path class="dash" d="M1260 432 C1170 432 1150 397 1130 397"/>
+
+  <rect class="badge" x="80" y="910" width="1440" height="48"/>
+  <text class="badge-text" x="110" y="940">Flow:</text>
+  <text class="tiny" x="154" y="940">User selects company and issue type → Flask validates company → n8n classifies and routes → MySQL stores in company-specific table → Gmail sends detailed confirmation → frontend shows ticket result</text>
+</svg>
