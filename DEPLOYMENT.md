@@ -1,73 +1,90 @@
 # DeskPilot AI Deployment Guide
 
-This guide explains how to restart, run, and deploy the DeskPilot AI support automation project.
+This guide covers local setup and the deployment layout for DeskPilot AI. The application consists of three separately configured parts:
 
-## Local Deployment
+1. Flask web application
+2. MySQL database
+3. n8n automation workflow
 
-### 1. Start MySQL
+The included `render.yaml` configures only the Flask web service. It does not create or host the MySQL database or n8n instance.
 
-Make sure MySQL Server is running on your system.
+## 1. Local setup
 
-Then create the database and tables:
+### Requirements
+
+- Python 3
+- MySQL Server and MySQL command-line client
+- Node.js and npm
+- n8n
+- SMTP account/credentials if email confirmations are to be sent
+
+### Step 1: Install Python dependencies
+
+From the project directory:
 
 ```powershell
-mysql -u root -p < database.sql
+python -m pip install -r requirements.txt
 ```
 
-To check stored data:
+### Step 2: Create the database
+
+Run from PowerShell:
 
 ```powershell
-mysql -u root -p
+cmd /c "mysql -u root -p < database.sql"
 ```
 
-Inside MySQL:
+The SQL file creates the `deskpilot_ai` database, the `companies` table, a generic `tickets` table, and initial ticket tables for Amazon, Flipkart and Myntra.
+
+Check the initial database:
 
 ```sql
 USE deskpilot_ai;
 SHOW TABLES;
 SELECT * FROM companies;
-SELECT * FROM tickets;
 ```
 
-### 2. Set Environment Variables
+### Step 3: Configure Flask environment variables
 
-PowerShell:
+Set the values in the same PowerShell session that will run Flask:
 
 ```powershell
-$env:MYSQL_HOST="localhost"
-$env:MYSQL_PORT="3306"
-$env:MYSQL_USER="root"
-$env:MYSQL_PASSWORD="your_mysql_password"
-$env:MYSQL_DATABASE="deskpilot_ai"
-$env:N8N_WEBHOOK_URL="http://localhost:5678/webhook/deskpilot"
+$env:MYSQL_HOST = "localhost"
+$env:MYSQL_PORT = "3306"
+$env:MYSQL_USER = "root"
+$env:MYSQL_PASSWORD = "your_mysql_password"
+$env:MYSQL_DATABASE = "deskpilot_ai"
+$env:N8N_WEBHOOK_URL = "http://localhost:5678/webhook/deskpilot"
 ```
 
-### 3. Start n8n
+Use your own database credentials. Do not commit real credentials to Git.
+
+### Step 4: Import and configure the n8n workflow
+
+Start n8n:
 
 ```powershell
 npx n8n
 ```
 
-Open:
+Open `http://localhost:5678` and import:
 
 ```text
-http://localhost:5678
+n8n_workflow.json
 ```
 
-Import the workflow:
+Configure credentials for these workflow nodes:
 
-```text
-n8n_workflow_FINAL_WITH_RANDOM_TICKET_ID.json
-```
+- `Execute a SQL query`: MySQL credential pointing to the `deskpilot_ai` database.
+- `Send Ticket Confirmation Email`: SMTP credential for the sender account.
 
-Configure these credentials in n8n:
+The workflow JSON contains credential references; importing it does not automatically configure your credential values. Configure the credentials in your own n8n instance.
 
-- MySQL credential
-- Gmail SMTP credential
+The webhook path is `deskpilot` and the method is `POST`. During manual testing, use the webhook test URL while n8n is listening for a test event. For normal active execution, activate the workflow and configure Flask with the production webhook URL shown by n8n. Do not assume the test and production URLs are interchangeable.
 
-### 4. Start Flask
+### Step 5: Start Flask
 
-In a new terminal:
+In a second PowerShell window, set the same Flask environment variables, then run:
 
 ```powershell
 python app.py
@@ -79,115 +96,61 @@ Open:
 http://127.0.0.1:5000
 ```
 
-## GitHub Deployment Preparation
+The `app.py` development entry point uses Flask debug mode. It is intended for local development, not public production hosting.
 
-Before pushing to GitHub:
+## 2. Verify ticket storage
 
-1. Confirm `.env` is not committed.
-2. Confirm real passwords are not inside source code.
-3. Commit only clean project files.
-4. Add screenshots or diagrams if needed for your project report.
+Tickets are stored in a separate table for each company. For the seeded companies, inspect them with:
 
-## Production Deployment Options
+```sql
+USE deskpilot_ai;
 
-DeskPilot AI uses three services, so production deployment should host each part properly.
+SELECT * FROM tickets_amazon;
+SELECT * FROM tickets_flipkart;
+SELECT * FROM tickets_myntra;
+```
 
-| Component | Recommended Deployment |
+For a newly registered company, inspect its `ticket_table` value in the `companies` table and query that table.
+
+## 3. Deployment architecture
+
+A hosted deployment needs all three components to communicate:
+
+| Component | Deployment responsibility |
 | --- | --- |
-| Flask App | Render, Railway, Fly.io, PythonAnywhere, or VPS |
-| MySQL | Railway MySQL, PlanetScale, Aiven, AWS RDS, or VPS MySQL |
-| n8n | n8n Cloud, Railway, Render, Docker VPS, or local server |
-| Email | Gmail SMTP App Password or production SMTP provider |
+| Flask | Public web service running the application |
+| MySQL | Reachable database containing the DeskPilot schema |
+| n8n | Reachable workflow service with the imported and activated workflow |
+| SMTP | Outbound email service configured as an n8n credential |
 
-## Recommended Free Deployment Path
+The Flask service must be able to reach MySQL and the n8n webhook. The n8n service must be able to reach MySQL and the SMTP provider.
 
-For the easiest live demo, use:
+Do not use `localhost` for a dependency hosted on a different service. In a hosted environment, `localhost` refers to the container or machine running the current service.
 
-1. Render for the Flask web app
-2. Railway or another hosted MySQL provider for the MySQL database
-3. n8n Cloud trial, Railway, or a VPS-hosted n8n instance for the workflow
-4. Gmail App Password for SMTP email sending
+## 4. Deploy the Flask service on Render
 
-Vercel is excellent for static and serverless frontend projects, but this project is a Flask backend connected to MySQL and n8n. Render is a better fit because it can run the Flask app using Gunicorn as a web service.
+The repository includes `render.yaml` with these settings:
 
-## Deploy Flask App on Render
-
-Render can deploy directly from your GitHub repository.
-
-1. Go to:
-
-```text
-https://render.com
-```
-
-2. Sign in with GitHub.
-
-3. Click:
-
-```text
-New > Web Service
-```
-
-4. Select your repository:
-
-```text
-Pratham2801/DeskPiolt-AI
-```
-
-5. Use these settings:
-
-| Setting | Value |
+| Setting | Configured value |
 | --- | --- |
-| Runtime | Python 3 |
-| Build Command | `pip install -r requirements.txt` |
-| Start Command | `gunicorn app:app` |
-| Plan | Free |
+| Service type | Web service |
+| Runtime | Python |
+| Build command | `pip install -r requirements.txt` |
+| Start command | `gunicorn app:app` |
 
-This repository also includes `render.yaml`, so Render can detect most deployment settings automatically.
+Deployment outline:
 
-## Deploy MySQL
+1. Push the reviewed project to GitHub.
+2. Create a Render Web Service and connect the repository.
+3. Allow Render to use `render.yaml`, or enter the build and start commands above.
+4. Add the required environment variables in the Render service settings.
+5. Deploy and inspect the service logs.
 
-Use a hosted MySQL provider such as Railway.
+The current `render.yaml` uses `plan: free`. Plan availability, limits, eligibility, and pricing can change. Confirm current terms in Render's documentation before relying on a particular plan.
 
-1. Create a new MySQL database.
-2. Copy the database host, port, user, password, and database name.
-3. Run the SQL from `database.sql` inside the hosted MySQL console.
-4. Add the same database values in Render environment variables.
+### Flask environment variables
 
-Required Render environment variables:
-
-```text
-MYSQL_HOST=your_mysql_host
-MYSQL_PORT=3306
-MYSQL_USER=your_mysql_user
-MYSQL_PASSWORD=your_mysql_password
-MYSQL_DATABASE=deskpilot_ai
-N8N_WEBHOOK_URL=https://your-n8n-domain/webhook/deskpilot
-```
-
-## Deploy n8n
-
-You need a public n8n URL because the live Flask app cannot call `localhost`.
-
-Options:
-
-1. n8n Cloud trial
-2. Railway deployment
-3. Render Docker deployment
-4. VPS deployment using Docker
-
-After deployment:
-
-1. Import `n8n_workflow.json`.
-2. Configure MySQL credentials.
-3. Configure Gmail SMTP credentials.
-4. Activate the workflow.
-5. Copy the production webhook URL.
-6. Add that URL as `N8N_WEBHOOK_URL` in Render.
-
-## Production Environment Variables
-
-Set these variables in your hosting platform:
+Set these in the hosting service's environment settings:
 
 ```text
 MYSQL_HOST=your_database_host
@@ -195,48 +158,103 @@ MYSQL_PORT=3306
 MYSQL_USER=your_database_user
 MYSQL_PASSWORD=your_database_password
 MYSQL_DATABASE=deskpilot_ai
-N8N_WEBHOOK_URL=https://your-n8n-domain/webhook/deskpilot
+N8N_WEBHOOK_URL=https://your-n8n-host/webhook/deskpilot
 ```
 
-## Production Workflow
+Use the actual values supplied by your database and n8n providers. Keep credentials in the hosting platform's secret/environment settings, not in the repository.
 
-1. Deploy MySQL and run `database.sql`.
-2. Deploy or configure n8n.
-3. Import the DeskPilot workflow JSON into n8n.
-4. Configure MySQL and Gmail SMTP credentials in n8n.
-5. Deploy the Flask app.
-6. Add the production n8n webhook URL in Flask environment variables.
-7. Submit a test ticket from the web portal.
-8. Verify ticket insertion in MySQL.
-9. Verify confirmation email is received.
+## 5. Provision MySQL
 
-## Common Issues
+1. Create a MySQL database with a provider that permits connections from the Flask and n8n services.
+2. Run the contents of `database.sql` against that database.
+3. Create a dedicated database user for the application/workflow.
+4. Grant only the database permissions needed for the operations performed by the Flask application and workflow.
+5. Configure the database connection in both Flask's environment variables and the n8n MySQL credential.
 
-### MySQL Password Error in PowerShell
+The n8n workflow inserts ticket records into the company-specific table passed by Flask. Confirm that the database user has the permissions needed for the workflow's insert and select operations, and for company-table creation if company registration is used.
 
-Use quotes:
+Do not expose the MySQL server publicly without appropriate network restrictions and authentication.
 
-```powershell
-$env:MYSQL_PASSWORD="your_password"
-```
+## 6. Deploy n8n
 
-### n8n Webhook Not Found
+Deploy n8n using a hosting option that supports its runtime and persistent configuration. Options may include a managed n8n service or a suitably configured server/container.
 
-Make sure the workflow is active and the webhook path is:
+After deployment:
 
-```text
-deskpilot
-```
+1. Open the n8n editor.
+2. Import `n8n_workflow.json`.
+3. Configure the MySQL credential.
+4. Configure the SMTP credential.
+5. Check the webhook node path and method.
+6. Activate the workflow.
+7. Copy the production webhook URL.
+8. Set that URL as `N8N_WEBHOOK_URL` in the Flask hosting environment.
+9. Redeploy or restart Flask if the hosting platform requires it to load changed environment variables.
 
-### Gmail SMTP Error
+The n8n instance must remain available to the Flask application. Configure persistent storage and backups according to the hosting provider's guidance.
 
-Use a Gmail App Password. Do not use the normal Gmail login password.
+## 7. End-to-end deployment test
 
-### Flask Cannot Connect to MySQL
+After all services are configured:
 
-Check:
+1. Confirm the Flask service is reachable over HTTPS.
+2. Confirm the n8n workflow is active.
+3. Submit a test ticket through the portal.
+4. Confirm the request reaches the n8n workflow.
+5. Confirm the expected company-specific MySQL table receives the ticket.
+6. Confirm the returned response is displayed by the Flask portal.
+7. If SMTP is configured, confirm the customer email is received.
+8. Inspect service logs for errors without exposing secrets.
 
-- MySQL Server is running
-- Database name is `deskpilot_ai`
-- Environment variables are set correctly
-- MySQL user has permission to insert and select data
+## 8. Troubleshooting
+
+### Flask cannot connect to MySQL
+
+- Confirm the database host, port, username, password and database name.
+- Confirm the database is running and accepts connections from the Flask host.
+- Confirm the database user has the required permissions.
+- Do not use `localhost` when MySQL is hosted on a separate service.
+
+### n8n webhook not found
+
+- Confirm the workflow is imported.
+- Confirm the webhook path is `deskpilot` and the method is `POST`.
+- For manual test execution, make sure the workflow is listening for a test event.
+- For normal execution, activate the workflow and use its production webhook URL.
+- Confirm `N8N_WEBHOOK_URL` matches the intended URL.
+
+### MySQL node fails in n8n
+
+- Confirm the n8n MySQL credential points to the correct database host and schema.
+- Confirm network access from n8n to MySQL.
+- Confirm the database user has the required permissions.
+- Check the table name and workflow execution data.
+
+### SMTP node fails
+
+- Confirm the SMTP host, port, encryption mode, username and password.
+- Confirm the SMTP provider permits the configured authentication method.
+- Store SMTP credentials in n8n credentials, not in the workflow's code or repository.
+
+### Flask returns an automation error
+
+- Confirm `N8N_WEBHOOK_URL` is reachable from the Flask service.
+- Inspect the n8n execution log and Flask service log.
+- Check that the workflow completed its SQL and email steps.
+
+## 9. Production security checklist
+
+The current code should receive a security review before public production use:
+
+- Add authentication and authorization to company registration.
+- Validate email addresses and enforce reasonable request-size limits.
+- Add rate limiting to public endpoints.
+- Avoid returning raw database and network exception details to clients.
+- Keep Flask debug mode disabled in production; use the included Gunicorn start command.
+- Use HTTPS for public traffic.
+- Use dedicated, least-privilege database credentials.
+- Keep database and SMTP secrets out of source control.
+- Review the n8n webhook's exposure and access controls.
+- Add backups and monitoring appropriate to the deployment.
+
+This guide describes the deployment configuration present in the repository; it does not certify the application as production-hardened.
